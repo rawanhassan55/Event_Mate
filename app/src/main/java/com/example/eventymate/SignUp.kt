@@ -51,6 +51,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -60,7 +61,7 @@ import com.google.firebase.ktx.Firebase
 fun SignUpScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToMain: () -> Unit,
-    viewModel: AuthViewModel
+    viewModel: AuthViewModel = viewModel()
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }

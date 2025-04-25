@@ -9,12 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 @Composable
 fun ForgotPasswordScreen(
     onNavigateBack: () -> Unit,
-    viewModel: AuthViewModel
+    viewModel: AuthViewModel = viewModel()
 ) {
     var email by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
