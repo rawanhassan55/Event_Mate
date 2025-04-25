@@ -294,14 +294,7 @@ fun SignUpScreen(
                     start = offset,
                     end = offset
                 ).firstOrNull()?.let {
-                    onNavigateToLogin
-                    Toast.makeText(
-                        context,
-                        "Login clicked!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    // Or navigate to login screen:
-                    // navController.navigate("login")
+                    onNavigateToLogin()
                 }
             }
         )

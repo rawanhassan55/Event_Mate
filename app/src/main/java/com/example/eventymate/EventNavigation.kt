@@ -16,19 +16,19 @@ fun EventNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = "signup"
     ) {
         composable("login") {
             LoginScreen(
                 onNavigateToSignUp = { navController.navigate("signup") },
                 onNavigateToMain = {
                     navController.navigate("home") {
-                        popUpTo("login") { inclusive = true }
+                        popUpTo("signup") { inclusive = true }
                     }
                 },
                 onNavigateToForgotPassword = { navController.navigate("forgot_password") },
                 viewModel = authViewModel,
-                onLoginClick = { navController.navigate("main") },
+                onLoginClick = { navController.navigate("home") },
                 onGoogleLoginClick = {}
             )
         }
@@ -41,8 +41,27 @@ fun EventNavigation(
                         popUpTo("signup") { inclusive = true }
                     }
                 },
-                viewModel = authViewModel
+                viewModel = authViewModel,
+            )
+        }
 
+        composable("forgot_password") {
+            ForgotPasswordScreen(
+                onNavigateBack = { navController.popBackStack() },
+                viewModel = authViewModel
+            )
+        }
+
+        composable("home") {
+            HomeScreen(
+                navController = navController,
+                viewModel = eventViewModel,
+                onSignOut = {
+                    authViewModel.signOut()
+                    navController.navigate("login") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                }
             )
         }
     }

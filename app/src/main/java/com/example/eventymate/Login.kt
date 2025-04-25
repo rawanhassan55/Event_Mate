@@ -77,209 +77,210 @@ fun LoginScreen(
 
     val auth: FirebaseAuth = Firebase.auth
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .background(Color(0xff0f1128))
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.flowers),
-            contentDescription = "App Logo",
+    Box (modifier = Modifier.fillMaxSize()
+        .background(Color(0xff0f1128))){
+        Column(
             modifier = Modifier
-                .size(120.dp)
-                .padding(bottom = 8.dp)
-        )
-
-        Text(
-            text = "Evently",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF536fff),
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = {
-                Row {
-                    Icon(
-                        imageVector = Icons.Default.Email,
-                        contentDescription = "Email",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Email")
-                }
-            },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFF536fff),
-                unfocusedBorderColor = Color(0xFF536fff),
-                focusedLabelColor = Color(0xFF536fff),
-                unfocusedLabelColor = Color.Gray,
-                cursorColor = Color(0xFF536fff),
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.DarkGray,
-            ),
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            singleLine = true
-        )
-
-        PasswordTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = "Enter Password"
-        )
-
-        TextButton(onClick = { onNavigateToForgotPassword }) {
-            Text(
-                text = "Forgot Password?", Modifier.fillMaxWidth(1f),
-                style = TextStyle(color = Color(0xFF536FFF))
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .background(Color(0xff0f1128))
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.flowers),
+                contentDescription = "App Logo",
+                modifier = Modifier
+                    .size(120.dp)
+                    .padding(bottom = 8.dp)
             )
-        }
 
-        Button(
-            onClick = {
-                isLoading = true
-                errorMessage = null
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        isLoading = false
-                        if (task.isSuccessful) {
-                            val user = auth.currentUser
-                            if (user != null && user.isEmailVerified) {
-                                onNavigateToMain()
-                            } else {
-                                errorMessage = "Please verify your email first."
-                            }
-                        } else {
-                            errorMessage = task.exception?.message ?: "Login failed"
-                        }
+            Text(
+                text = "Evently",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF536fff),
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = {
+                    Row {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = "Email",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Email")
                     }
-            },
-            enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 32.dp)
-                .height(48.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF536FFF),
-                contentColor = Color.White
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF536fff),
+                    unfocusedBorderColor = Color(0xFF536fff),
+                    focusedLabelColor = Color(0xFF536fff),
+                    unfocusedLabelColor = Color.Gray,
+                    cursorColor = Color(0xFF536fff),
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.DarkGray,
+                ),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                singleLine = true
             )
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            } else {
-                Text("Login")
-            }
-        }
 
-        Row(
-            modifier = Modifier.padding(vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Divider(
-                modifier = Modifier.weight(1f),
-                color = Color.Gray.copy(alpha = 0.3f)
+            PasswordTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = "Enter Password"
             )
-            Text(
-                text = "Or",
-                modifier = Modifier.padding(horizontal = 8.dp),
-                color = Color.Gray
-            )
-            Divider(
-                modifier = Modifier.weight(1f),
-                color = Color.Gray.copy(alpha = 0.3f)
-            )
-        }
-        val annotatedText = buildAnnotatedString {
-            withStyle(
-                style = SpanStyle(
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                )
-            ) {
-                append("Don't Have Account? ")
-            }
-            pushStringAnnotation(
-                tag = "LOGIN_TAG",
-                annotation = "login_clicked"
-            )
-            withStyle(
-                style = SpanStyle(
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF536FFF),
-                    textDecoration = TextDecoration.Underline
-                )
-            ) {
-                append("Create Account")
-            }
-            pop()
-        }
 
-        ClickableText(
-            text = annotatedText,
-            modifier = Modifier.padding(all = 8.dp),
-            onClick = { offset ->
-                annotatedText.getStringAnnotations(
-                    tag = "LOGIN_TAG",
-                    start = offset,
-                    end = offset
-                ).firstOrNull()?.let {
-                    // Handle login click here
-                    Toast.makeText(
-                        context,
-                        "Login clicked!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    // Or navigate to login screen:
-                    // navController.navigate("login")
-                }
-            }
-        )
-
-        OutlinedButton(
-            onClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            colors = ButtonDefaults.buttonColors(
-                Color(0xff0f1128)
-            ),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, Color(0xFF536FFF))
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(id = R.drawable.google_icon),
-                    contentDescription = "Google logo",
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+            TextButton(onClick = { onNavigateToForgotPassword() }) {
                 Text(
-                    "Login With Google",
+                    text = "Forgot Password?", Modifier.fillMaxWidth(1f),
                     style = TextStyle(color = Color(0xFF536FFF))
                 )
             }
+
+            Button(
+                onClick = {
+                    isLoading = true
+                    errorMessage = null
+                    auth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            isLoading = false
+                            if (task.isSuccessful) {
+                                val user = auth.currentUser
+                                if (user != null && user.isEmailVerified) {
+                                    onNavigateToMain()
+                                } else {
+                                    errorMessage = "Please verify your email first."
+                                }
+                            } else {
+                                errorMessage = task.exception?.message ?: "Login failed"
+                            }
+                        }
+                },
+                enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 32.dp)
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF536FFF),
+                    contentColor = Color.White
+                )
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text("Login")
+                }
+            }
+
+            Row(
+                modifier = Modifier.padding(vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Divider(
+                    modifier = Modifier.weight(1f),
+                    color = Color.Gray.copy(alpha = 0.3f)
+                )
+                Text(
+                    text = "Or",
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    color = Color.Gray
+                )
+                Divider(
+                    modifier = Modifier.weight(1f),
+                    color = Color.Gray.copy(alpha = 0.3f)
+                )
+            }
+            val annotatedText = buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                    )
+                ) {
+                    append("Don't Have Account? ")
+                }
+                pushStringAnnotation(
+                    tag = "LOGIN_TAG",
+                    annotation = "login_clicked"
+                )
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF536FFF),
+                        textDecoration = TextDecoration.Underline
+                    )
+                ) {
+                    append("Create Account")
+                }
+                pop()
+            }
+
+            ClickableText(
+                text = annotatedText,
+                modifier = Modifier.padding(all = 8.dp),
+                onClick = { offset ->
+                    annotatedText.getStringAnnotations(
+                        tag = "LOGIN_TAG",
+                        start = offset,
+                        end = offset
+                    ).firstOrNull()?.let {
+                        onNavigateToMain()
+                        Toast.makeText(
+                            context,
+                            "Login clicked!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            )
+
+            OutlinedButton(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(
+                    Color(0xff0f1128)
+                ),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, Color(0xFF536FFF))
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.drawable.google_icon),
+                        contentDescription = "Google logo",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        "Login With Google",
+                        style = TextStyle(color = Color(0xFF536FFF))
+                    )
+                }
+            }
+            var selectedFlag by remember { mutableStateOf("usa") }
+
+            FlagToggle(selectedFlag = selectedFlag) { newFlag ->
+                selectedFlag = newFlag
+            }
+
+
         }
-        var selectedFlag by remember { mutableStateOf("usa") }
-
-        FlagToggle(selectedFlag = selectedFlag) { newFlag ->
-            selectedFlag = newFlag
-        }
-
-
     }
 }
 
