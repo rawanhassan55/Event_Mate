@@ -1,6 +1,7 @@
 package com.example.eventymate
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,22 +14,27 @@ fun EventNavigation(
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
+    val prefsHelper = remember { PreferencesHelper(context) }
 
     NavHost(
         navController = navController,
         startDestination = "signup"
     ) {
+
+        composable("setting") {
+            SettingsScreen(
+
+            )
+        }
         composable("login") {
             LoginScreen(
                 onNavigateToSignUp = { navController.navigate("signup") },
-                onNavigateToMain = {
-                    navController.navigate("home") {
-                        popUpTo("signup") { inclusive = true }
+                onNavigateToMain = { navController.navigate("home") {
+                            popUpTo("login") { inclusive = true }
                     }
                 },
                 onNavigateToForgotPassword = { navController.navigate("forgot_password") },
                 viewModel = authViewModel,
-                onLoginClick = { navController.navigate("home") },
                 onGoogleLoginClick = {}
             )
         }
@@ -37,11 +43,13 @@ fun EventNavigation(
             SignUpScreen(
                 onNavigateToLogin = { navController.navigate("login") },
                 onNavigateToMain = {
-                    navController.navigate("home") {
-                        popUpTo("signup") { inclusive = true }
+                    if (prefsHelper.onboardingCompleted) {
+                        navController.navigate("home") {
+                            popUpTo("signup") { inclusive = true }
+                        }
                     }
                 },
-                viewModel = authViewModel,
+                viewModel = authViewModel
             )
         }
 
@@ -56,6 +64,7 @@ fun EventNavigation(
             HomeScreen(
                 navController = navController,
                 viewModel = eventViewModel,
+                onSettingNavigation = { navController.navigate("setting") },
                 onSignOut = {
                     authViewModel.signOut()
                     navController.navigate("login") {

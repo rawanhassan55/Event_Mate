@@ -35,7 +35,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,12 +61,11 @@ import com.google.firebase.ktx.Firebase
 
 @Composable
 fun LoginScreen(
-    onLoginClick: () -> Unit,
     onGoogleLoginClick: () -> Unit,
     onNavigateToSignUp: () -> Unit,
     onNavigateToMain: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
-    viewModel: AuthViewModel = viewModel()
+    viewModel: AuthViewModel = viewModel(),
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -77,8 +75,11 @@ fun LoginScreen(
 
     val auth: FirebaseAuth = Firebase.auth
 
-    Box (modifier = Modifier.fillMaxSize()
-        .background(Color(0xff0f1128))){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xff0f1128))
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -182,6 +183,7 @@ fun LoginScreen(
                         modifier = Modifier.size(24.dp),
                         color = MaterialTheme.colorScheme.onPrimary
                     )
+                    onNavigateToMain()
                 } else {
                     Text("Login")
                 }
@@ -205,49 +207,17 @@ fun LoginScreen(
                     color = Color.Gray.copy(alpha = 0.3f)
                 )
             }
-            val annotatedText = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                    )
-                ) {
-                    append("Don't Have Account? ")
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Don't have an account?")
+                TextButton(onClick = onNavigateToSignUp) {
+                    Text("Sign Up")
                 }
-                pushStringAnnotation(
-                    tag = "LOGIN_TAG",
-                    annotation = "login_clicked"
-                )
-                withStyle(
-                    style = SpanStyle(
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF536FFF),
-                        textDecoration = TextDecoration.Underline
-                    )
-                ) {
-                    append("Create Account")
-                }
-                pop()
             }
-
-            ClickableText(
-                text = annotatedText,
-                modifier = Modifier.padding(all = 8.dp),
-                onClick = { offset ->
-                    annotatedText.getStringAnnotations(
-                        tag = "LOGIN_TAG",
-                        start = offset,
-                        end = offset
-                    ).firstOrNull()?.let {
-                        onNavigateToMain()
-                        Toast.makeText(
-                            context,
-                            "Login clicked!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            )
 
             OutlinedButton(
                 onClick = {},
