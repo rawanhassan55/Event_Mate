@@ -78,31 +78,40 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xff0f1128))
+            //(Color(0xff0f1128))
+            .background(Color.White)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
-                .background(Color(0xff0f1128))
+                .background(Color.White)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.flowers),
+                painter = painterResource(id = R.drawable.event_mate_logo),
                 contentDescription = "App Logo",
                 modifier = Modifier
-                    .size(120.dp)
-                    .padding(bottom = 8.dp)
+                    .size(280.dp)
+                    //.padding(bottom = 8.dp)
+                //color : 0XFF4A5182
             )
 
             Text(
-                text = "Evently",
+                text = "Welcome Back!",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF536fff),
-                modifier = Modifier.padding(bottom = 32.dp)
+                color = Color(0XFF4A5182),
+                //modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            Text(
+                text = "Login to your account",
+                fontSize = 16.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
 
             OutlinedTextField(
@@ -120,11 +129,11 @@ fun LoginScreen(
                     }
                 },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF536fff),
-                    unfocusedBorderColor = Color(0xFF536fff),
-                    focusedLabelColor = Color(0xFF536fff),
+                    focusedBorderColor = Color(0XFF4A5182),
+                    unfocusedBorderColor = Color(0XFF4A5182),
+                    focusedLabelColor = Color(0XFF4A5182),
                     unfocusedLabelColor = Color.Gray,
-                    cursorColor = Color(0xFF536fff),
+                    cursorColor = Color(0XFF4A5182),
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.DarkGray,
                 ),
@@ -138,13 +147,14 @@ fun LoginScreen(
             PasswordTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = "Enter Password"
+                label = "Enter Password",
+
             )
 
             TextButton(onClick = { onNavigateToForgotPassword() }) {
                 Text(
                     text = "Forgot Password?", Modifier.fillMaxWidth(1f),
-                    style = TextStyle(color = Color(0xFF536FFF))
+                    style = TextStyle(color = Color(0XFF4A5182))
                 )
             }
 
@@ -170,12 +180,11 @@ fun LoginScreen(
                 enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 32.dp)
+                    .padding(top = 16.dp)
                     .height(48.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF536FFF),
-                    contentColor = Color.White
+                    Color(0XFF4A5182),
                 )
             ) {
                 if (isLoading) {
@@ -185,7 +194,9 @@ fun LoginScreen(
                     )
                     onNavigateToMain()
                 } else {
-                    Text("Login")
+                    Text("Login",
+                        style = TextStyle(color = Color.White)
+                        )
                 }
             }
 
@@ -207,7 +218,7 @@ fun LoginScreen(
                     color = Color.Gray.copy(alpha = 0.3f)
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            //Spacer(modifier = Modifier.height(4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
@@ -215,7 +226,9 @@ fun LoginScreen(
             ) {
                 Text("Don't have an account?")
                 TextButton(onClick = onNavigateToSignUp) {
-                    Text("Sign Up")
+                    Text("Sign Up",
+                        style = TextStyle(color = Color(0XFF4A5182))
+                        )
                 }
             }
 
@@ -225,10 +238,10 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .height(48.dp),
                 colors = ButtonDefaults.buttonColors(
-                    Color(0xff0f1128)
+                    Color(0XFF4A5182)
                 ),
                 shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, Color(0xFF536FFF))
+                border = BorderStroke(1.dp, Color(0XFF4A5182))
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
@@ -238,8 +251,9 @@ fun LoginScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
+
                         "Login With Google",
-                        style = TextStyle(color = Color(0xFF536FFF))
+                        style = TextStyle(color = Color.White)
                     )
                 }
             }
@@ -268,8 +282,8 @@ fun FlagToggle(
     Box(
         modifier = Modifier
             .padding(24.dp)
-            .background(Color(0xff0f1128), shape = RoundedCornerShape(50))
-            .border(2.dp, Color(0xFF536FFF), shape = RoundedCornerShape(50))
+            .background(Color(0XFF4A5182), shape = RoundedCornerShape(50))
+            .border(2.dp, Color(0XFF4A5182), shape = RoundedCornerShape(50))
             .padding(horizontal = 2.dp, vertical = 4.dp)
     ) {
         Row(
@@ -282,7 +296,7 @@ fun FlagToggle(
                         .padding(horizontal = 4.dp)
                         .clip(CircleShape)
                         .background(
-                            if (isSelected) Color(0xFF536FFF) else Color.Transparent,
+                            if (isSelected) Color(0XFF4A5182) else Color.Transparent,
                             CircleShape
                         )
                         .clickable { onFlagSelected(flag) }
