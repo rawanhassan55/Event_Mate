@@ -80,31 +80,31 @@ fun SignUpScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xff0f1128))
+            .background(Color.White)
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Register",
-            fontSize = 24.sp,
-            color = Color(0xFF536fff),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
         Image(
-            painter = painterResource(id = R.drawable.flowers),
+            painter = painterResource(id = R.drawable.event_mate_logo),
             contentDescription = "App Logo",
             modifier = Modifier
-                .size(120.dp)
-                .padding(bottom = 16.dp)
+                .size(250.dp)
+                //.padding(bottom = 16.dp)
         )
 
         Text(
-            text = "Evently",
+            text = "Sign Up",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF536fff),
-            modifier = Modifier.padding(bottom = 32.dp)
+            color = Color(0XFF4A5182),
+            //modifier = Modifier.padding(bottom = 16.dp)
+        )
+        Text(
+            text = "Create your new account",
+            fontSize = 16.sp,
+            color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 16.dp)
         )
 
 
@@ -123,11 +123,11 @@ fun SignUpScreen(
                 }
             },
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFF536fff),
-                unfocusedBorderColor = Color(0xFF536fff),
-                focusedLabelColor = Color(0xFF536fff),
+                focusedBorderColor = Color(0XFF4A5182),
+                unfocusedBorderColor = Color(0XFF4A5182),
+                focusedLabelColor = Color(0XFF4A5182),
                 unfocusedLabelColor = Color.Gray,
-                cursorColor = Color(0xFF536fff),
+                cursorColor = Color(0XFF4A5182),
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.DarkGray,
             ),
@@ -153,11 +153,11 @@ fun SignUpScreen(
                 }
             },
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFF536fff),
-                unfocusedBorderColor = Color(0xFF536fff),
-                focusedLabelColor = Color(0xFF536fff),
+                focusedBorderColor = Color(0XFF4A5182),
+                unfocusedBorderColor = Color(0XFF4A5182),
+                focusedLabelColor = Color(0XFF4A5182),
                 unfocusedLabelColor = Color.Gray,
-                cursorColor = Color(0xFF536fff),
+                cursorColor = Color(0XFF4A5182),
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.DarkGray,
             ),
@@ -225,7 +225,7 @@ fun SignUpScreen(
                 .height(48.dp),
             enabled = !isLoading,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF536FFF),
+                containerColor = Color(0XFF4A5182),
                 contentColor = Color.White
             ),
             shape = RoundedCornerShape(12.dp),
@@ -262,7 +262,7 @@ fun SignUpScreen(
             withStyle(
                 style = SpanStyle(
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = Color.Black,
                 )
             ) {
                 append("Already Have Account? ")
@@ -274,7 +274,7 @@ fun SignUpScreen(
             withStyle(
                 style = SpanStyle(
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF536FFF),
+                    color = Color(0XFF4A5182),
                     textDecoration = TextDecoration.Underline
                 )
             ) {
@@ -354,16 +354,16 @@ fun PasswordTextField(
                     } else {
                         "Show password"
                     },
-                    tint = Color(0xFF536FFF)
+                    tint = Color(0XFF4A5182)
                 )
             }
         },
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color(0xFF536FFF),
-            unfocusedBorderColor = Color(0xFF536FFF),
-            focusedLabelColor = Color(0xFF536FFF),
+            focusedBorderColor = Color(0XFF4A5182),
+            unfocusedBorderColor = Color(0XFF4A5182),
+            focusedLabelColor = Color(0XFF4A5182),
             unfocusedLabelColor = Color.Gray,
-            cursorColor = Color(0xFF536FFF),
+            cursorColor = Color(0XFF4A5182),
             focusedTextColor = Color.Black,
             unfocusedTextColor = Color.DarkGray
         ),
