@@ -18,7 +18,7 @@ fun EventNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = "signup"
     ) {
 
         composable("splash") {
