@@ -9,6 +9,6 @@
 
     <!-- Theme for SplashScreen -->
     <style name="Theme.EventyMate.Splash" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowBackground">@drawable/event_mate_logo</item> <!-- خلفية الـ Splash -->
+        <item name="android:windowBackground">@drawable/event_logo</item> <!-- خلفية الـ Splash -->
     </style>
 </resources>

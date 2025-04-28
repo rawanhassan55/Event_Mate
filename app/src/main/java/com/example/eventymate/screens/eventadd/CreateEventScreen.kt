@@ -111,7 +111,7 @@ fun CreateEventScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { /* we will save the event */ },
+            onClick = { /*  save the event */ },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)

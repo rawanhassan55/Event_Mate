@@ -1,11 +1,13 @@
 package com.example.eventymate
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.eventymate.screens.eventadd.CreateEventScreen
+
+//import com.example.eventymate.screens.eventadd.CreateEventScreen
 
 @Composable
 fun EventNavigation(
@@ -67,6 +69,22 @@ fun EventNavigation(
         composable("home") {
             HomeScreen(
                 navController = navController,
+                onCreateEventNavigation = { navController.navigate("createEvent") }
+            )
+        }
+
+        composable("createEvent") {
+            CreateEventScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+
+
+
+        /*composable("home") {
+            HomeScreen(
+                navController = navController,
                 viewModel = eventViewModel,
                 onSettingNavigation = { navController.navigate("setting") },
                 onSignOut = {
@@ -76,6 +94,6 @@ fun EventNavigation(
                     }
                 }
             )
-        }
+        }*/
     }
 }

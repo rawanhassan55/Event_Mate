@@ -41,7 +41,7 @@ fun SplashScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.Top
         ) {
             Image(
-                painter = painterResource(id = R.drawable.event_mate_logo),
+                painter = painterResource(id = R.drawable.event_logo),
                 contentDescription = "Event Mate Logo"
             )
             Spacer(modifier = Modifier.height(16.dp))
