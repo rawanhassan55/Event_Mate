@@ -1,4 +1,4 @@
-package com.example.eventymate
+package com.example.eventymate.auth
 
 import android.content.Context
 import androidx.compose.foundation.Image
@@ -52,6 +52,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.eventymate.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase

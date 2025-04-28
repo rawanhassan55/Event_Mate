@@ -1,10 +1,15 @@
 package com.example.eventymate
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.eventymate.auth.AuthViewModel
+import com.example.eventymate.auth.ForgotPasswordScreen
+import com.example.eventymate.auth.LoginScreen
+import com.example.eventymate.auth.SignUpScreen
 import com.example.eventymate.screens.eventadd.CreateEventScreen
 
 //import com.example.eventymate.screens.eventadd.CreateEventScreen
@@ -24,7 +29,7 @@ fun EventNavigation(
     ) {
 
         composable("splash") {
-            SplashScreen()
+            SplashScreen(navController)
         }
 
         composable("setting") {
@@ -35,8 +40,9 @@ fun EventNavigation(
         composable("login") {
             LoginScreen(
                 onNavigateToSignUp = { navController.navigate("signup") },
-                onNavigateToMain = { navController.navigate("home") {
-                            popUpTo("login") { inclusive = true }
+                onNavigateToMain = {
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true }
                     }
                 },
                 onNavigateToForgotPassword = { navController.navigate("forgot_password") },
@@ -78,8 +84,6 @@ fun EventNavigation(
                 onBackClick = { navController.popBackStack() }
             )
         }
-
-
 
 
         /*composable("home") {

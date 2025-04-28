@@ -1,4 +1,4 @@
-package com.example.eventymate
+package com.example.eventymate.auth
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
