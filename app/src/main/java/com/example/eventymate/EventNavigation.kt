@@ -6,7 +6,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.eventymate.ui.theme.SplashScreen
 
 @Composable
 fun EventNavigation(
@@ -19,11 +18,11 @@ fun EventNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = "signup"
     ) {
 
         composable("splash") {
-            SplashScreen(navController)
+            SplashScreen()
         }
 
         composable("setting") {
