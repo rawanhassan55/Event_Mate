@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Event Mate</string>
     <string name="title_activity_main2">MainActivity2</string>
+    <string name="default_web_client_id">YOUR_CLIENT_ID_HERE.apps.googleusercontent.com</string>
 </resources>

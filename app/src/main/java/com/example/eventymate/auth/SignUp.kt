@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +57,7 @@ import com.example.eventymate.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -64,6 +66,7 @@ fun SignUpScreen(
     onNavigateToMain: () -> Unit,
     viewModel: AuthViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -74,8 +77,6 @@ fun SignUpScreen(
 
     val auth: FirebaseAuth = Firebase.auth
 
-
-    val context = LocalContext.current
     val sharedPreferences = remember {
         context.getSharedPreferences("EventlyPrefs", Context.MODE_PRIVATE)
     }

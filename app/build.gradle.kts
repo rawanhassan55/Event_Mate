@@ -84,6 +84,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    implementation ("com.google.android.gms:play-services-auth:20.7.0")
 
     //Room DB
     val roomVersion = "2.6.0"
