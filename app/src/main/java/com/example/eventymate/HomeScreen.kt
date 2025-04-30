@@ -50,14 +50,17 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,14 +68,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import com.example.eventymate.presentation.NoteState
+import com.example.eventymate.presentation.NotesEvent
+import com.example.eventymate.presentation.NotesViewModel
 
 @Composable
-fun HomeScreen(navController: NavController,onCreateEventNavigation: () -> Unit) {
+fun HomeScreen(navController: NavController,onCreateEventNavigation: () -> Unit
+               , state : NoteState,
+               viewModel : NotesViewModel) {
     Scaffold(
         bottomBar = { EventMateBottomNavigation(navController) },
         floatingActionButton = {
@@ -89,11 +96,17 @@ fun HomeScreen(navController: NavController,onCreateEventNavigation: () -> Unit)
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                //.verticalScroll(rememberScrollState())
         ) {
             WelcomeSection()
             FiltersSection()
-            EmptyEventsIllustration()
+            if (state.notes.isEmpty()){
+                EmptyEventsIllustration()
+            }else {
+                NonEmptyEventsIllustration(
+                    state = state, viewModel = viewModel, navController = navController
+                )
+            }
         }
     }
 }
@@ -167,7 +180,7 @@ fun WelcomeSection() {
 
 @Composable
 fun FiltersSection() {
-    val filters = listOf("All", "Sport", "Birthday", "Music", "Food", "Travel")
+    val filters = listOf("All", "Sport", "Birthday", "Music", "Food", "Travel","Others")
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -199,6 +212,25 @@ fun FilterItem(filter: String) {
 }
 
 @Composable
+fun NonEmptyEventsIllustration(state : NoteState, viewModel : NotesViewModel, navController: NavController) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+
+        items(state.notes.size) { index ->
+            NoteItem(
+                state = state,
+                index = index,
+                onEvent = viewModel::onEvent
+            )
+        }
+    }
+}
+
+@Composable
 fun EmptyEventsIllustration() {
     Box(
         modifier = Modifier
@@ -216,6 +248,84 @@ fun EmptyEventsIllustration() {
 
     }
 }
+
+
+@Composable
+fun NoteItem(
+    state: NoteState,
+    index: Int,
+    onEvent: (NotesEvent) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer)
+            .padding(12.dp)
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = state.notes[index].title,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colors.primary
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = state.notes[index].description,
+                fontSize = 18.sp,
+                color = MaterialTheme.colors.secondary
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = state.notes[index].eventDate,
+                    fontSize = 16.sp,
+                    color = Color(0xff000000),
+                    modifier = Modifier.weight(1f)
+
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = state.notes[index].eventTime,
+                    fontSize = 16.sp,
+                    color = Color(0xff000000),
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = state.notes[index].location,
+                    fontSize = 16.sp,
+                    color = Color(0xff000000),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        IconButton(
+            onClick = {
+                onEvent(NotesEvent.DeleteNote(state.notes[index]))
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Delete,
+                contentDescription = "Delete Note",
+                modifier = Modifier.size(35.dp),
+                tint = MaterialTheme.colors.primary
+            )
+
+        }
+
+    }
+}
+
 
 @Composable
 fun FloatingCreateEventButton(onCreateEventNavigation: () -> Unit) {
@@ -274,7 +384,9 @@ fun EventMateBottomNavigation(navController: NavController) {
 fun HomeScreenPreview() {
     HomeScreen(
         navController = rememberNavController(),
-        onCreateEventNavigation = {}
+        onCreateEventNavigation = {},
+        state = TODO(),
+        viewModel = TODO(),
     )
 }
 

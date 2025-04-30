@@ -10,6 +10,10 @@ import com.example.eventymate.auth.AuthViewModel
 import com.example.eventymate.auth.ForgotPasswordScreen
 import com.example.eventymate.auth.LoginScreen
 import com.example.eventymate.auth.SignUpScreen
+import com.example.eventymate.presentation.AddNoteScreen
+import com.example.eventymate.presentation.NoteState
+import com.example.eventymate.presentation.NotesScreen
+import com.example.eventymate.presentation.NotesViewModel
 import com.example.eventymate.screens.eventadd.CreateEventScreen
 
 //import com.example.eventymate.screens.eventadd.CreateEventScreen
@@ -18,6 +22,8 @@ import com.example.eventymate.screens.eventadd.CreateEventScreen
 fun EventNavigation(
     authViewModel: AuthViewModel,
     eventViewModel: AuthViewModel,
+    state : NoteState,
+    viewModel : NotesViewModel
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -75,15 +81,28 @@ fun EventNavigation(
         composable("home") {
             HomeScreen(
                 navController = navController,
-                onCreateEventNavigation = { navController.navigate("createEvent") }
+                onCreateEventNavigation = { navController.navigate("createEvent") },
+                state = state,
+                viewModel = viewModel
             )
         }
 
         composable("createEvent") {
             CreateEventScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                state = state,
+                navController = navController,
+                onEvent = viewModel::onEvent
             )
         }
+
+//        composable("AddNoteScreen") {
+//            AddNoteScreen(
+//                state = state,
+//                navController = navController,
+//                onEvent = viewModel::onEvent
+//            )
+//        }
 
 
         /*composable("home") {

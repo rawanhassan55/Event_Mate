@@ -16,7 +16,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.eventymate.R
+import com.example.eventymate.presentation.NoteState
+import com.example.eventymate.presentation.NotesEvent
 import com.example.eventymate.screens.eventadd.components.CustomButton
 import com.example.eventymate.screens.eventadd.components.CustomTextField
 import com.example.eventymate.screens.eventadd.components.DateTimePicker
@@ -24,7 +27,10 @@ import com.example.eventymate.screens.eventadd.components.DateTimePicker
 
 @Composable
 fun CreateEventScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    state: NoteState,
+    navController: NavController,
+    onEvent: (NotesEvent) -> Unit
 ) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -70,16 +76,20 @@ fun CreateEventScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         CustomTextField(
-            value = title,
-            onValueChange = { title = it },
+            value = state.title.value,
+            onValueChange = {
+                state.title.value = it
+            },
             label = "Event Title"
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         CustomTextField(
-            value = description,
-            onValueChange = { description = it },
+            value = state.description.value,
+            onValueChange = {
+                state.description.value = it
+            },
             label = "Event Description",
             singleLine = false
         )
@@ -88,30 +98,46 @@ fun CreateEventScreen(
 
         DateTimePicker(
             label = "Event Date",
-            value = eventDate,
-            onValueChange = { eventDate = it }
+            value = state.eventDate.value,
+            onValueChange = {
+                state.eventDate.value = it
+            }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         DateTimePicker(
             label = "Event Time",
-            value = eventTime,
-            onValueChange = { eventTime = it }
+            value = state.eventTime.value,
+            onValueChange = {
+                state.eventTime.value = it
+            }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         CustomTextField(
-            value = location,
-            onValueChange = { location = it },
+            value = state.location.value,
+            onValueChange = {
+                state.location.value = it
+            },
             label = "Location"
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { /*  save the event */ },
+            onClick = {
+                //Save Note
+                onEvent(NotesEvent.SaveNote(
+                    title = state.title.value,
+                    description = state.description.value,
+                    eventDate = state.eventDate.value,
+                    eventTime = state.eventTime.value,
+                    location = state.location.value
+                ))
+                navController.popBackStack()
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)

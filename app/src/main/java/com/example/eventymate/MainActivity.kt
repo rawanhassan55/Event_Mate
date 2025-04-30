@@ -4,17 +4,47 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.compose.rememberNavController
 import androidx.work.WorkManager
 import com.example.eventymate.auth.AuthViewModel
 import com.example.eventymate.ui.theme.EventyMateTheme
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
+import androidx.compose.runtime.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.room.Room
+import com.example.eventymate.data.NotesDatabase
+import com.example.eventymate.presentation.NotesViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val database by lazy {
+        Room.databaseBuilder(
+            applicationContext,
+            NotesDatabase::class.java,
+            "notes.db"
+        ).build()
+    }
+
+    private val viewModel by viewModels<NotesViewModel> (
+        factoryProducer = {
+            object : ViewModelProvider.Factory {
+                override fun<T: ViewModel> create(modelClass: Class<T>): T {
+                    return NotesViewModel(database.dao) as T
+                }
+            }
+        }
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -35,7 +65,6 @@ class MainActivity : ComponentActivity() {
         val workManager = WorkManager.getInstance(this)
         Log.d("NotificationDebug", "WorkManager initialized: $workManager")
 
-
         setContent {
             EventyMateTheme {
             }
@@ -44,10 +73,18 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val authViewModel = AuthViewModel(application)
+
+                    //Room Database
+                    val state by viewModel.state.collectAsState()
+                    val navController = rememberNavController()
+
                     EventNavigation(
                         authViewModel = authViewModel,
-                        eventViewModel = authViewModel
+                        eventViewModel = authViewModel,
+                        state = state,
+                        viewModel = viewModel
                     )
+
                 }
             }
         }
