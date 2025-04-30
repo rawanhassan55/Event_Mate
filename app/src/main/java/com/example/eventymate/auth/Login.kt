@@ -1,5 +1,7 @@
 package com.example.eventymate.auth
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,10 +56,11 @@ import com.example.eventymate.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
-    onGoogleLoginClick: () -> Unit,
+    onSignInSuccess: () -> Unit,
     onNavigateToSignUp: () -> Unit,
     onNavigateToMain: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
@@ -67,8 +71,26 @@ fun LoginScreen(
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    val coroutineScope = rememberCoroutineScope()
+    val googleAuthHelper = remember { GoogleAuthHelper(context) }
 
     val auth: FirebaseAuth = Firebase.auth
+
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        coroutineScope.launch {
+            val signInResult = googleAuthHelper.signInWithIntent(result.data ?: return@launch)
+            when (signInResult) {
+                is GoogleSignInResult.Success -> {
+                    viewModel.signInWithGoogle(signInResult.account)
+                }
+                is GoogleSignInResult.Error -> {
+                    errorMessage = signInResult.exception.message ?: "Google sign-in failed"
+                }
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -230,12 +252,15 @@ fun LoginScreen(
             }
 
             OutlinedButton(
-                onClick = {},
+                onClick = {
+                    googleSignInLauncher.launch(googleAuthHelper.getSignInIntent())
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
                 colors = ButtonDefaults.buttonColors(
-                    Color(0XFF4A5182)
+                    containerColor = Color.White,
+                    contentColor = Color(0XFF4A5182)
                 ),
                 shape = RoundedCornerShape(12.dp),
                 border = BorderStroke(1.dp, Color(0XFF4A5182))
@@ -248,11 +273,24 @@ fun LoginScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-
                         "Login With Google",
-                        style = TextStyle(color = Color.White)
+                        style = TextStyle(color = Color(0XFF4A5182))
                     )
                 }
+            }
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Color(0XFF4A5182)
+                )
+            }
+
+            errorMessage?.let { message ->
+                Text(
+                    text = message,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
             var selectedFlag by remember { mutableStateOf("usa") }
 

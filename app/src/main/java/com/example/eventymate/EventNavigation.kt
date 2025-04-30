@@ -47,8 +47,7 @@ fun EventNavigation(
                 },
                 onNavigateToForgotPassword = { navController.navigate("forgot_password") },
                 viewModel = authViewModel,
-                onGoogleLoginClick = {}
-            )
+                onSignInSuccess = { navController.navigate("home") })
         }
 
         composable("signup") {
