@@ -15,6 +15,8 @@ import com.example.eventymate.presentation.NoteState
 import com.example.eventymate.presentation.NotesScreen
 import com.example.eventymate.presentation.NotesViewModel
 import com.example.eventymate.screens.eventadd.CreateEventScreen
+import com.example.eventymate.ui.theme.EditProfileScreen
+import com.example.eventymate.ui.theme.ProfileScreen
 
 //import com.example.eventymate.screens.eventadd.CreateEventScreen
 
@@ -94,6 +96,16 @@ fun EventNavigation(
                 onEvent = viewModel::onEvent
             )
         }
+
+        composable("profile") {
+            ProfileScreen(navController)
+        }
+
+        composable("edit_profile") {
+            EditProfileScreen(navController)
+        }
+
+
 
 //        composable("AddNoteScreen") {
 //            AddNoteScreen(

@@ -89,6 +89,7 @@ fun HomeScreen(navController: NavController,onCreateEventNavigation: () -> Unit
                 }
             )
         },
+        floatingActionButtonPosition = FabPosition.Center,
         isFloatingActionButtonDocked = true,
         topBar = { TopBarSection() }
     ) { innerPadding ->
@@ -121,11 +122,13 @@ fun TopBarSection() {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
+
+
+        /*Image(
             painter = painterResource(id = R.drawable.wb_sunny),
             contentDescription = "Theme Icon",
             modifier = Modifier.size(24.dp)
-        )
+        )*/
 
         /*
  Button(onClick = { onSettingNavigation() }) {
@@ -144,11 +147,11 @@ fun TopBarSection() {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(end = 8.dp)
             )
-
+/*
             IconButton(onClick = { /*onSettingNavigation()*/}) {
                 Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings", tint = Color.White)
             }
-
+*/
         }
     }
 }
@@ -352,7 +355,9 @@ fun EventMateBottomNavigation(navController: NavController) {
     ) {
         BottomNavigationItem(
             selected = selectedItem == 0,
-            onClick = { selectedItem = 0 },
+            onClick = { selectedItem = 0
+                navController.navigate("home")
+                      },
             icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home") },
             label = { Text("Home") }
         )
@@ -371,7 +376,9 @@ fun EventMateBottomNavigation(navController: NavController) {
         )
         BottomNavigationItem(
             selected = selectedItem == 3,
-            onClick = { selectedItem = 3 },
+            onClick = { selectedItem = 3
+                navController.navigate("profile")
+                      },
             icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "Profile") },
             label = { Text("Profile") }
         )
