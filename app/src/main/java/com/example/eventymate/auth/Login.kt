@@ -1,5 +1,6 @@
 package com.example.eventymate.auth
 
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -36,6 +37,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,6 +76,20 @@ fun LoginScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val googleAuthHelper = remember { GoogleAuthHelper(context) }
+    val authState by viewModel.authState.collectAsState()
+
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Authenticated -> {
+                Log.d("AuthDebug", "Login successful, navigating to home")
+                onSignInSuccess()
+            }
+            is AuthState.EmailNotVerified -> {
+                Log.d("AuthDebug", "Email not verified - show warning")
+            }
+            else -> {}
+        }
+    }
 
     val auth: FirebaseAuth = Firebase.auth
 
@@ -85,6 +102,7 @@ fun LoginScreen(
                 is GoogleSignInResult.Success -> {
                     viewModel.signInWithGoogle(signInResult.account)
                 }
+
                 is GoogleSignInResult.Error -> {
                     errorMessage = signInResult.exception.message ?: "Google sign-in failed"
                 }
@@ -114,7 +132,7 @@ fun LoginScreen(
                     .size(280.dp)
                     .height(50.dp)
                     .width(50.dp)
-                    //.padding(bottom = 8.dp)
+                //.padding(bottom = 8.dp)
                 //color : 0XFF4A5182
             )
 
@@ -168,7 +186,7 @@ fun LoginScreen(
                 onValueChange = { password = it },
                 label = "Enter Password",
 
-            )
+                )
 
             TextButton(onClick = { onNavigateToForgotPassword() }) {
                 Text(
@@ -213,9 +231,10 @@ fun LoginScreen(
                     )
                     onNavigateToMain()
                 } else {
-                    Text("Login",
+                    Text(
+                        "Login",
                         style = TextStyle(color = Color.White)
-                        )
+                    )
                 }
             }
 
@@ -245,9 +264,10 @@ fun LoginScreen(
             ) {
                 Text("Don't have an account?")
                 TextButton(onClick = onNavigateToSignUp) {
-                    Text("Sign Up",
+                    Text(
+                        "Sign Up",
                         style = TextStyle(color = Color(0XFF4A5182))
-                        )
+                    )
                 }
             }
 

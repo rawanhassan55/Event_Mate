@@ -1,33 +1,54 @@
 package com.example.eventymate
 
 
-
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.eventymate.R
+import com.example.eventymate.auth.AuthState
+import com.example.eventymate.auth.AuthViewModel
 import kotlinx.coroutines.delay
 
 
 @Composable
-fun SplashScreen(navController: NavHostController) {
+fun SplashScreen(
+    authViewModel: AuthViewModel = viewModel(),
+    onNavigateToHome: () -> Unit,
+    onNavigateToVerification: (String) -> Unit,
+    onNavigateToLogin: () -> Unit,
+) {
+    val authState by authViewModel.authState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        delay(2000)
-        Log.d("SplashScreen", "Navigating to login screen")
-        navController.navigate("login") {
-            popUpTo("splash") { inclusive = true }
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Authenticated -> {
+                delay(2000)
+                onNavigateToHome()
+            }
+            is AuthState.EmailNotVerified -> {
+                delay(1500)
+                onNavigateToVerification((authState as AuthState.EmailNotVerified).email)
+            }
+            is AuthState.Unauthenticated -> {
+                delay(1500)
+                onNavigateToLogin()
+            }
+            else -> {}
         }
     }
+
 
 
     Box(

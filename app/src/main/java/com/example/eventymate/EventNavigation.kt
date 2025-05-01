@@ -1,12 +1,19 @@
 package com.example.eventymate
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.eventymate.auth.AuthState
 import com.example.eventymate.auth.AuthViewModel
+import com.example.eventymate.auth.EmailVerificationScreen
 import com.example.eventymate.auth.ForgotPasswordScreen
 import com.example.eventymate.auth.LoginScreen
 import com.example.eventymate.auth.SignUpScreen
@@ -23,21 +30,47 @@ import com.example.eventymate.ui.theme.ProfileScreen
 @Composable
 fun EventNavigation(
     authViewModel: AuthViewModel,
-    eventViewModel: AuthViewModel,
-    state : NoteState,
-    viewModel : NotesViewModel
+    state: NoteState,
+    viewModel: NotesViewModel,
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val prefsHelper = remember { PreferencesHelper(context) }
 
+
     NavHost(
         navController = navController,
-        startDestination = "signup"
+        startDestination = "splash"
     ) {
 
         composable("splash") {
-            SplashScreen(navController)
+            SplashScreen(
+                onNavigateToHome = { navController.navigate("home") },
+                onNavigateToLogin = { navController.navigate("login") },
+                onNavigateToVerification = { email ->
+                    navController.navigate("verify_email/$email")
+                }
+            )
+        }
+
+        composable(
+            "verify_email/{email}",
+            arguments = listOf(navArgument("email") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            EmailVerificationScreen(
+                email = email,
+                onBackToLogin = {
+                    navController.navigate("login") {
+                        popUpTo("verify_email/{email}") { inclusive = true }
+                    }
+                },
+                onVerified = {
+                    navController.navigate("home") {
+                        popUpTo("verify_email/{email}") { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable("setting") {
@@ -47,16 +80,18 @@ fun EventNavigation(
         }
         composable("login") {
             LoginScreen(
-                onNavigateToSignUp = { navController.navigate("signup") },
-                onNavigateToMain = {
+                onSignInSuccess = {
                     navController.navigate("home") {
                         popUpTo("login") { inclusive = true }
                     }
                 },
+                onNavigateToSignUp = { navController.navigate("signup") },
                 onNavigateToForgotPassword = { navController.navigate("forgot_password") },
                 viewModel = authViewModel,
-                onSignInSuccess = { navController.navigate("home") })
+                onNavigateToMain = { navController.navigate("home") }
+            )
         }
+
 
         composable("signup") {
             SignUpScreen(

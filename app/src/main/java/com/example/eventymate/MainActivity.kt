@@ -80,7 +80,6 @@ class MainActivity : ComponentActivity() {
 
                     EventNavigation(
                         authViewModel = authViewModel,
-                        eventViewModel = authViewModel,
                         state = state,
                         viewModel = viewModel
                     )

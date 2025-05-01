@@ -4,9 +4,10 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.eventymate.PreferencesHelper
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -18,6 +19,11 @@ import kotlinx.coroutines.tasks.await
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val auth: FirebaseAuth = Firebase.auth
+
+    private val prefsHelper = PreferencesHelper(application)
+
+    private val _isLoggedIn = MutableStateFlow(false)
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
@@ -31,88 +37,65 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 _authState.value = AuthState.Loading
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                auth.signInWithCredential(credential).await()
+                val authResult = auth.signInWithCredential(credential).await()
 
-                val user = auth.currentUser
-                if (user != null) {
+                authResult.user?.let { user ->
+                    _isLoggedIn.value = true
+                    prefsHelper.onboardingCompleted = true
                     _authState.value = AuthState.Authenticated(user.email ?: "")
-                    Log.d("AuthViewModel", "Google sign-in successful")
-                } else {
-                    _authState.value = AuthState.Error("Google sign-in failed")
+                } ?: run {
+                    _isLoggedIn.value = false
+                    _authState.value = AuthState.Error("Google sign-in failed - no user")
                 }
             } catch (e: Exception) {
-                Log.e("AuthViewModel", "Google sign-in error", e)
+                _isLoggedIn.value = false
                 _authState.value = AuthState.Error(e.message ?: "Google sign-in failed")
             }
         }
     }
 
-    private fun checkAuthState() {
+    fun checkAuthState() {
         viewModelScope.launch {
             try {
+                _authState.value = AuthState.Loading
                 val currentUser = auth.currentUser
-                _authState.value = if (currentUser != null) {
-                    if (currentUser.isEmailVerified) {
-                        AuthState.Authenticated(currentUser.email ?: "")
-                    } else {
-                        AuthState.EmailNotVerified
+
+                if (currentUser != null) {
+                    when {
+                        // Google-authenticated users don't need email verification
+                        isGoogleUser(currentUser) -> {
+                            handleSuccessfulAuth(currentUser)
+                        }
+                        // Email/password users must verify their email
+                        currentUser.isEmailVerified -> {
+                            handleSuccessfulAuth(currentUser)
+                        }
+                        else -> {
+                            _isLoggedIn.value = false
+                            _authState.value = AuthState.EmailNotVerified(currentUser.email ?: "")
+                        }
                     }
                 } else {
-                    AuthState.Unauthenticated
+                    _isLoggedIn.value = false
+                    _authState.value = AuthState.Unauthenticated
                 }
             } catch (e: Exception) {
-                Log.e("AuthViewModel", "Error checking auth state: ${e.message}")
-                _authState.value = AuthState.Error("Error checking authentication state")
+                _isLoggedIn.value = false
+                _authState.value = AuthState.Error(e.message ?: "Authentication check failed")
             }
         }
     }
 
-    fun signIn(email: String, password: String) {
-        viewModelScope.launch {
-            try {
-                _authState.value = AuthState.Loading
-                Log.d("AuthViewModel", "Attempting to sign in with email: $email")
-                auth.signInWithEmailAndPassword(email, password).await()
-                val user = auth.currentUser
-                if (user != null && user.isEmailVerified) {
-                    Log.d("AuthViewModel", "User signed in successfully")
-                    _authState.value = AuthState.Authenticated(user.email ?: "")
-                } else {
-                    Log.w("AuthViewModel", "User email not verified")
-                    _authState.value = AuthState.EmailNotVerified
-                }
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "Sign in error: ${e.message}")
-                _authState.value = AuthState.Error(e.message ?: "Authentication failed")
-            }
+    private fun isGoogleUser(user: FirebaseUser): Boolean {
+        return user.providerData.any {
+            it.providerId == GoogleAuthProvider.PROVIDER_ID
         }
     }
 
-    fun signUp(email: String, password: String, username: String) {
-        viewModelScope.launch {
-            try {
-                _authState.value = AuthState.Loading
-                Log.d("AuthViewModel", "Attempting to create user with email: $email")
-
-                // Check if Firebase is initialized
-                if (FirebaseApp.getApps(getApplication()).isEmpty()) {
-                    throw Exception("Firebase not initialized")
-                }
-
-                auth.createUserWithEmailAndPassword(email, password).await()
-                val user = auth.currentUser
-                if (user != null) {
-                    Log.d("AuthViewModel", "User created successfully, sending verification email")
-                    user.sendEmailVerification().await()
-                    _authState.value = AuthState.EmailVerificationSent
-                } else {
-                    throw Exception("User creation failed")
-                }
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "Sign up error: ${e.message}")
-                _authState.value = AuthState.Error(e.message ?: "Sign up failed")
-            }
-        }
+    private fun handleSuccessfulAuth(user: FirebaseUser) {
+        _isLoggedIn.value = true
+        prefsHelper.onboardingCompleted = true
+        _authState.value = AuthState.Authenticated(user.email ?: "")
     }
 
     fun signOut() {
@@ -126,6 +109,16 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun sendEmailVerification() {
+        viewModelScope.launch {
+            try {
+                auth.currentUser?.sendEmailVerification()?.await()
+                _authState.value = AuthState.EmailVerificationSent
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("Failed to send verification email")
+            }
+        }
+    }
     fun resetPassword(email: String) {
         viewModelScope.launch {
             try {
@@ -142,11 +135,12 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 }
 
+
 sealed class AuthState {
     object Initial : AuthState()
     object Loading : AuthState()
     object Unauthenticated : AuthState()
-    object EmailNotVerified : AuthState()
+    data class EmailNotVerified(val email: String) : AuthState()
     object EmailVerificationSent : AuthState()
     object PasswordResetEmailSent : AuthState()
     data class Authenticated(val email: String) : AuthState()
