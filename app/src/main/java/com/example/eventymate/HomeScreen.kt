@@ -49,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -99,7 +100,7 @@ fun HomeScreen(navController: NavController,onCreateEventNavigation: () -> Unit
                 .fillMaxSize()
                 //.verticalScroll(rememberScrollState())
         ) {
-            WelcomeSection()
+
             FiltersSection()
             if (state.notes.isEmpty()){
                 EmptyEventsIllustration()
@@ -113,71 +114,54 @@ fun HomeScreen(navController: NavController,onCreateEventNavigation: () -> Unit
 }
 
 @Composable
-fun TopBarSection() {
+fun TopBarSection(
+    userName: String = "Rawan Hassan",
+    onLanguageClick: () -> Unit = {},
+    onThemeToggle: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.primary)
-            .padding(16.dp),
+            .height(100.dp)
+            .background(Color(0XFF4A5182))
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-
-        /*Image(
-            painter = painterResource(id = R.drawable.wb_sunny),
-            contentDescription = "Theme Icon",
-            modifier = Modifier.size(24.dp)
-        )*/
-
-        /*
- Button(onClick = { onSettingNavigation() }) {
-            Text(text = "Settings")
+        Column(horizontalAlignment = Alignment.End) {
+            Text(
+                text = "Welcome Back ✨",
+                color = Color.White,
+                fontSize = 14.sp
+            )
+            Text(
+                text = userName,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        IconButton(onClick = {onSignOut() }) {
-            Icon(Icons.Filled.ExitToApp, contentDescription = "Localized description")
-        }
-    }
-         */
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "EN",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier
+                    .clickable { onLanguageClick() }
+                    .padding(end = 12.dp)
             )
-/*
-            IconButton(onClick = { /*onSettingNavigation()*/}) {
-                Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings", tint = Color.White)
-            }
-*/
+            Icon(
+                imageVector = Icons.Default.WbSunny,
+                contentDescription = "Toggle Theme",
+                tint = Color.White,
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable { onThemeToggle() }
+            )
         }
-    }
-}
 
-@Composable
-fun WelcomeSection() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Welcome Back ✨",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium
-        )
-        Text(
-            text = "Rawan Hassan",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "Cairo, Egypt",
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
+
     }
 }
 
@@ -201,7 +185,7 @@ fun FiltersSection() {
 fun FilterItem(filter: String) {
     Surface(
         shape = CircleShape,
-        color = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+        color = Color(0XFF4A5182).copy(alpha = 0.1f),
         modifier = Modifier
             .height(40.dp)
     ) {
@@ -273,7 +257,7 @@ fun NoteItem(
                 text = state.notes[index].title,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colors.primary
+                color = Color(0XFF4A5182)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -281,7 +265,7 @@ fun NoteItem(
             Text(
                 text = state.notes[index].description,
                 fontSize = 18.sp,
-                color = MaterialTheme.colors.secondary
+                color = Color.Black
             )
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -321,7 +305,7 @@ fun NoteItem(
                 imageVector = Icons.Rounded.Delete,
                 contentDescription = "Delete Note",
                 modifier = Modifier.size(35.dp),
-                tint = MaterialTheme.colors.primary
+                tint = Color(0XFF4A5182)
             )
 
         }
@@ -336,7 +320,7 @@ fun FloatingCreateEventButton(onCreateEventNavigation: () -> Unit) {
         onClick = {
             onCreateEventNavigation()
         },
-        backgroundColor = MaterialTheme.colors.primary,
+        backgroundColor =Color(0XFF4A5182) ,
         modifier = Modifier.padding(8.dp)
         //.align(Alignment.BottomCenter)
 
@@ -351,27 +335,27 @@ fun EventMateBottomNavigation(navController: NavController) {
     var selectedItem by remember { mutableStateOf(0) }
     BottomAppBar(
         cutoutShape = CircleShape,
-        backgroundColor = MaterialTheme.colors.primary
+        backgroundColor = Color(0XFF4A5182)
     ) {
         BottomNavigationItem(
             selected = selectedItem == 0,
             onClick = { selectedItem = 0
                 navController.navigate("home")
                       },
-            icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home") },
+            icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home", tint = Color.White) },
             label = { Text("Home") }
         )
         BottomNavigationItem(
             selected = selectedItem == 1,
             onClick = { selectedItem = 1 },
-            icon = { Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Map") },
+            icon = { Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Map", tint = Color.White) },
             label = { Text("Map") }
         )
         Spacer(Modifier.weight(1f, true))
         BottomNavigationItem(
             selected = selectedItem == 2,
             onClick = { selectedItem = 2 },
-            icon = { Icon(imageVector = Icons.Default.Favorite, contentDescription = "Love") },
+            icon = { Icon(imageVector = Icons.Default.Favorite, contentDescription = "Love", tint = Color.White) },
             label = { Text("Love") }
         )
         BottomNavigationItem(
@@ -379,7 +363,7 @@ fun EventMateBottomNavigation(navController: NavController) {
             onClick = { selectedItem = 3
                 navController.navigate("profile")
                       },
-            icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "Profile") },
+            icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "Profile", tint = Color.White) },
             label = { Text("Profile") }
         )
 
