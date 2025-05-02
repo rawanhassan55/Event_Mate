@@ -1,4 +1,4 @@
-package com.example.eventymate.ui.theme
+package com.example.eventymate.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

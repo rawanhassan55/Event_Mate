@@ -1,4 +1,4 @@
-package com.example.eventymate
+package com.example.eventymate.auth
 
 import android.content.Context
 

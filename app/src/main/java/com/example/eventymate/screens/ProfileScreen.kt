@@ -1,4 +1,4 @@
-package com.example.eventymate.ui.theme
+package com.example.eventymate.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,14 +8,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,7 +23,10 @@ import com.example.eventymate.R
 
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(
+    navController: NavController,
+    onSignOut: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -63,14 +64,14 @@ fun ProfileScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(32.dp))
 
 
-        ProfileItem("Edit Profile",R.drawable.edit_icon) { navController.navigate("edit_profile") }
-        ProfileItem("Notification",R.drawable.baseline_notifications) {  }
-        ProfileItem("Change Password",R.drawable.lock) {  }
+        ProfileItem("Edit Profile", R.drawable.edit_icon) { navController.navigate("edit_profile") }
+        ProfileItem("Notification", R.drawable.baseline_notifications) { }
+        ProfileItem("Change Password", R.drawable.lock) { }
 
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = {  },
+            onClick = { onSignOut() },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFF4A5182))
         ) {
             Text("Sign Out", color = Color.White)
@@ -82,7 +83,7 @@ fun ProfileScreen(navController: NavController) {
 fun ProfileItem(
     title: String,
     iconResId: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val icon = painterResource(id = iconResId)
 

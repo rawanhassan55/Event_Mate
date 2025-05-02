@@ -1,4 +1,4 @@
-package com.example.eventymate
+package com.example.eventymate.screens
 
 
 import android.util.Log

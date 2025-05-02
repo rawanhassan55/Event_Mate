@@ -1,5 +1,6 @@
 package com.example.eventymate.auth
 
+import android.app.Activity
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.eventymate.R
+import com.example.eventymate.locale.LocaleHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -64,7 +67,7 @@ import kotlinx.coroutines.launch
 fun SignUpScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToMain: () -> Unit,
-    viewModel: AuthViewModel = viewModel()
+    viewModel: AuthViewModel = viewModel(),
 ) {
     val context = LocalContext.current
     var name by remember { mutableStateOf("") }
@@ -74,6 +77,14 @@ fun SignUpScreen(
     val onPasswordVisibilityToggle: (Boolean) -> Unit = {}
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    val activity = context as? Activity
+    var selectedLanguage by remember { mutableStateOf(LocaleHelper.getPersistedLanguage(context)) }
+
+    fun changeLanguage(language: String) {
+        selectedLanguage = language
+        LocaleHelper.persistLanguage(context, language)
+        activity?.recreate()
+    }
 
     val auth: FirebaseAuth = Firebase.auth
 
@@ -95,21 +106,21 @@ fun SignUpScreen(
             contentDescription = "App Logo",
             modifier = Modifier
                 .size(250.dp)
-                //.padding(bottom = 16.dp)
+            //.padding(bottom = 16.dp)
         )
 
         Text(
-            text = "Sign Up",
+            text = stringResource(id = R.string.sign_up),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0XFF4A5182),
             //modifier = Modifier.padding(bottom = 16.dp)
         )
         Text(
-            text = "Create your new account",
+            text = stringResource(id = R.string.create_account),
             fontSize = 16.sp,
             color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 16.dp)
         )
 
 
@@ -120,11 +131,11 @@ fun SignUpScreen(
                 Row {
                     Icon(
                         imageVector = Icons.Default.Person,
-                        contentDescription = "Name",
+                        contentDescription = stringResource(id = R.string.name),
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Name")
+                    Text(stringResource(id = R.string.name))
                 }
             },
             colors = OutlinedTextFieldDefaults.colors(
@@ -150,11 +161,11 @@ fun SignUpScreen(
                 Row {
                     Icon(
                         imageVector = Icons.Default.Email,
-                        contentDescription = "Email",
+                        contentDescription = stringResource(id = R.string.email),
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Email")
+                    Text(stringResource(id = R.string.email))
                 }
             },
             colors = OutlinedTextFieldDefaults.colors(
@@ -176,13 +187,13 @@ fun SignUpScreen(
         PasswordTextField(
             value = password,
             onValueChange = { password = it },
-            label = "Enter Password"
+            label = stringResource(id = R.string.enter_password),
         )
 
         PasswordTextField(
             value = rePassword,
             onValueChange = { rePassword = it },
-            label = "Enter Password Again"
+            label = stringResource(id = R.string.enter_password_again),
         )
 
 
@@ -190,15 +201,15 @@ fun SignUpScreen(
             onClick = {
                 when {
                     email.isBlank() || password.isBlank() || rePassword.isBlank() || name.isBlank() -> {
-                        errorMessage = "Please fill in all fields"
+                        errorMessage = R.string.error_fill_all_fields.toString()
                     }
 
                     password.length < 6 -> {
-                        errorMessage = "Password must be at least 6 characters"
+                        errorMessage = R.string.error_password_short.toString()
                     }
 
                     password != rePassword -> {
-                        errorMessage = "Passwords don't match"
+                        errorMessage = R.string.error_password_mismatch.toString()
                     }
 
                     else -> {
@@ -214,12 +225,14 @@ fun SignUpScreen(
                                             if (verificationTask.isSuccessful) {
                                                 onNavigateToLogin()
                                             } else {
-                                                errorMessage = "Failed to send verification email"
+                                                errorMessage =
+                                                    R.string.error_verification_email_failed.toString()
                                             }
                                         }
                                 } else {
                                     isLoading = false
-                                    errorMessage = task.exception?.message ?: "Signup failed"
+                                    errorMessage = task.exception?.message
+                                        ?: R.string.error_signup_failed.toString()
                                 }
                             }
                     }
@@ -246,7 +259,7 @@ fun SignUpScreen(
                 )
             } else {
                 Text(
-                    text = "Create Account",
+                    text = stringResource(id = R.string.create_account),
                     style = MaterialTheme.typography.labelLarge.copy(
                         fontWeight = FontWeight.Bold
                     )
@@ -270,7 +283,7 @@ fun SignUpScreen(
                     color = Color.Black,
                 )
             ) {
-                append("Already Have Account? ")
+                append(stringResource(id = R.string.already_have_account))
             }
             pushStringAnnotation(
                 tag = "LOGIN_TAG",
@@ -283,7 +296,7 @@ fun SignUpScreen(
                     textDecoration = TextDecoration.Underline
                 )
             ) {
-                append("Login")
+                append(stringResource(id = R.string.login))
             }
             pop()
         }
@@ -305,8 +318,18 @@ fun SignUpScreen(
 
         var selectedFlag by remember { mutableStateOf("egypt") }
 
-        FlagToggle(selectedFlag = selectedFlag) { newFlag ->
-            selectedFlag = newFlag
+        FlagToggle(
+            selectedFlag = when (selectedLanguage) {
+                "ar" -> "egypt"
+                else -> "usa"
+            }
+        ) { flag ->
+            changeLanguage(
+                when (flag) {
+                    "egypt" -> "ar"
+                    else -> "en"
+                }
+            )
         }
 
     }
@@ -317,7 +340,7 @@ fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    label: String = "Password",
+    label: String = stringResource(id = R.string.password),
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
@@ -328,7 +351,7 @@ fun PasswordTextField(
             Row {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "Password",
+                    contentDescription = stringResource(id = R.string.password),
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -355,9 +378,9 @@ fun PasswordTextField(
                         }
                     ),
                     contentDescription = if (isPasswordVisible) {
-                        "Hide password"
+                        stringResource(id = R.string.hide_password)
                     } else {
-                        "Show password"
+                        stringResource(id = R.string.show_password)
                     },
                     tint = Color(0XFF4A5182)
                 )

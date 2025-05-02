@@ -1,9 +1,6 @@
-package com.example.eventymate
+package com.example.eventymate.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
@@ -11,19 +8,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.eventymate.auth.AuthState
 import com.example.eventymate.auth.AuthViewModel
 import com.example.eventymate.auth.EmailVerificationScreen
 import com.example.eventymate.auth.ForgotPasswordScreen
 import com.example.eventymate.auth.LoginScreen
+import com.example.eventymate.auth.PreferencesHelper
 import com.example.eventymate.auth.SignUpScreen
-import com.example.eventymate.presentation.AddNoteScreen
 import com.example.eventymate.presentation.NoteState
-import com.example.eventymate.presentation.NotesScreen
 import com.example.eventymate.presentation.NotesViewModel
+import com.example.eventymate.screens.HomeScreen
+import com.example.eventymate.screens.SettingsScreen
+import com.example.eventymate.screens.SplashScreen
 import com.example.eventymate.screens.eventadd.CreateEventScreen
-import com.example.eventymate.ui.theme.EditProfileScreen
-import com.example.eventymate.ui.theme.ProfileScreen
+import com.example.eventymate.screens.EditProfileScreen
+import com.example.eventymate.screens.ProfileScreen
 
 //import com.example.eventymate.screens.eventadd.CreateEventScreen
 
@@ -32,6 +30,7 @@ fun EventNavigation(
     authViewModel: AuthViewModel,
     state: NoteState,
     viewModel: NotesViewModel,
+    onLanguageToggle: (String) -> Unit,
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -119,7 +118,8 @@ fun EventNavigation(
                 navController = navController,
                 onCreateEventNavigation = { navController.navigate("createEvent") },
                 state = state,
-                viewModel = viewModel
+                viewModel = viewModel,
+                onLanguageToggle = onLanguageToggle
             )
         }
 
@@ -133,13 +133,13 @@ fun EventNavigation(
         }
 
         composable("profile") {
-            ProfileScreen(navController)
+            ProfileScreen(navController,
+                onSignOut = { navController.navigate("login") })
         }
 
         composable("edit_profile") {
             EditProfileScreen(navController)
         }
-
 
 
 //        composable("AddNoteScreen") {
