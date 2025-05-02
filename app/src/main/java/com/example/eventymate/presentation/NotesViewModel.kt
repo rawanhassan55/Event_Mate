@@ -52,6 +52,7 @@ class NotesViewModel(
                     eventDate = state.value.eventDate.value,
                     eventTime = state.value.eventTime.value,
                     location = state.value.location.value,
+                    category = state.value.category,
                     dateAdded = System.currentTimeMillis()
                 )
 
@@ -63,8 +64,16 @@ class NotesViewModel(
                     it.copy(
                         title = mutableStateOf(""),
                         description = mutableStateOf(""),
+                        eventDate = mutableStateOf(""),
+                        eventTime = mutableStateOf(""),
+                        location = mutableStateOf(""),
+                        category = "",
                     )
                 }
+            }
+
+            is NotesEvent.SelectCategory -> {
+                _state.value = state.value.copy(category = event.category)
             }
 
             NotesEvent.SortNotes -> {

@@ -11,6 +11,6 @@ data class NoteState(
     val description: MutableState<String> = mutableStateOf(""),
     val eventDate: MutableState<String> = mutableStateOf(""),
     val eventTime: MutableState<String> = mutableStateOf(""),
-    val location: MutableState<String> = mutableStateOf("")
-
+    val location: MutableState<String> = mutableStateOf(""),
+    var category: String = ""
 )

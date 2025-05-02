@@ -15,4 +15,7 @@ sealed interface NotesEvent {
         val eventTime : String,
         val location : String,
     ): NotesEvent
+
+    data class SelectCategory(val category: String) : NotesEvent
+
 }

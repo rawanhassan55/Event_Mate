@@ -1,10 +1,16 @@
 package com.example.eventymate.screens.eventadd
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -32,16 +39,21 @@ fun CreateEventScreen(
     navController: NavController,
     onEvent: (NotesEvent) -> Unit
 ) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var eventDate by remember { mutableStateOf("") }
-    var eventTime by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("") }
+    var isTitleError  by remember { mutableStateOf(false) }
+    var isDescriptionError  by remember { mutableStateOf(false) }
+    var isDateError  by remember { mutableStateOf(false) }
+    var isTimeError  by remember { mutableStateOf(false) }
+    var isLocationError  by remember { mutableStateOf(false) }
+    var isCategoryError  by remember { mutableStateOf(false) }
+    state.category = ""
 
+
+    val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .verticalScroll(scrollState)
     ) {
 
         Text(
@@ -64,13 +76,12 @@ fun CreateEventScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            CustomButton(text = "Sport")
-            CustomButton(text = "Birthday")
-            CustomButton(text = "Meeting")
+        val eventCategories = listOf("Work", "Education", "Personal", "Sport", "Birthday", "Travel", "Other")
+
+        CategorySelector(categories = eventCategories) { selected ->
+            // Handle category selection here
+            println("Selected Category: $selected")
+            state.category = selected
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -79,9 +90,11 @@ fun CreateEventScreen(
             value = state.title.value,
             onValueChange = {
                 state.title.value = it
+                isTitleError = it.trim().isEmpty()
             },
-            label = "Event Title"
-        )
+            label = "Event Title",
+            isError = isTitleError,
+            )
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -89,10 +102,12 @@ fun CreateEventScreen(
             value = state.description.value,
             onValueChange = {
                 state.description.value = it
+                isDescriptionError = it.trim().isEmpty()
             },
             label = "Event Description",
-            singleLine = false
-        )
+            singleLine = false,
+            isError = isDescriptionError,
+            )
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -101,6 +116,7 @@ fun CreateEventScreen(
             value = state.eventDate.value,
             onValueChange = {
                 state.eventDate.value = it
+                isDateError = it.trim().isEmpty()
             }
         )
 
@@ -111,6 +127,7 @@ fun CreateEventScreen(
             value = state.eventTime.value,
             onValueChange = {
                 state.eventTime.value = it
+                isTimeError = it.trim().isEmpty()
             }
         )
 
@@ -120,16 +137,55 @@ fun CreateEventScreen(
             value = state.location.value,
             onValueChange = {
                 state.location.value = it
+                isLocationError = it.trim().isEmpty()
             },
-            label = "Location"
-        )
+            label = "Location",
+            isError = isLocationError,
+            )
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        if (isTitleError) {
+            Text("Title is required", color = Color.Red, fontSize = 12.sp)
+        }
+        if (isDescriptionError) {
+            Text("Description is required", color = Color.Red, fontSize = 12.sp)
+        }
+        if (isDateError) {
+            Text("Date is required", color = Color.Red, fontSize = 12.sp)
+        }
+        if (isTimeError) {
+            Text("Time is required", color = Color.Red, fontSize = 12.sp)
+        }
+        if (isLocationError) {
+            Text("Location is required", color = Color.Red, fontSize = 12.sp)
+        }
+        if (isCategoryError) {
+            Text("Category is required", color = Color.Red, fontSize = 12.sp)
+        }
+
         Button(
             onClick = {
+
+                val titleEmpty = state.title.value.trim().isEmpty()
+                val descriptionEmpty = state.description.value.trim().isEmpty()
+                val dateEmpty = state.eventDate.value.trim().isEmpty()
+                val timeEmpty = state.eventTime.value.trim().isEmpty()
+                val locationEmpty = state.location.value.trim().isEmpty()
+                val categoryEmpty = state.category.trim().isEmpty()
+
+
+                isTitleError = titleEmpty
+                isDescriptionError = descriptionEmpty
+                isDateError = dateEmpty
+                isTimeError = timeEmpty
+                isLocationError = locationEmpty
+                isCategoryError = categoryEmpty
+
+
                 //Save Note
-                onEvent(NotesEvent.SaveNote(
+                if (!titleEmpty && !descriptionEmpty && !dateEmpty && !timeEmpty && !locationEmpty && !categoryEmpty) {
+                    onEvent(NotesEvent.SaveNote(
                     title = state.title.value,
                     description = state.description.value,
                     eventDate = state.eventDate.value,
@@ -137,12 +193,55 @@ fun CreateEventScreen(
                     location = state.location.value
                 ))
                 navController.popBackStack()
+                    }
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
             Text(text = "Save Event", fontSize = 18.sp)
+        }
+    }
+}
+
+
+
+
+@Composable
+fun CategorySelector(
+    categories: List<String>,
+    initialSelected: String = "",
+    onCategorySelected: (String) -> Unit
+) {
+    var selectedCategory by remember { mutableStateOf(initialSelected) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(8.dp)
+    ) {
+        categories.forEach { category ->
+            val isSelected = category == selectedCategory
+            Box(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .clickable {
+                        selectedCategory = category
+                        onCategorySelected(category)
+                    }
+                    .background(
+                        if (isSelected) Color(0xFF6200EE) else Color.LightGray,
+                        shape = RoundedCornerShape(20.dp)
+                    )
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = category,
+                    color = if (isSelected) Color.White else Color.Black,
+                    fontSize = 14.sp
+                )
+            }
         }
     }
 }

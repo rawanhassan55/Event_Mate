@@ -61,6 +61,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -68,14 +69,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import com.example.eventymate.data.Note
 import com.example.eventymate.presentation.NoteState
 import com.example.eventymate.presentation.NotesEvent
 import com.example.eventymate.presentation.NotesViewModel
+import com.example.eventymate.screens.eventadd.CategorySelector
 
 @Composable
 fun HomeScreen(navController: NavController,onCreateEventNavigation: () -> Unit
@@ -101,7 +105,9 @@ fun HomeScreen(navController: NavController,onCreateEventNavigation: () -> Unit
                 //.verticalScroll(rememberScrollState())
         ) {
 
-            FiltersSection()
+            FiltersSection(
+                state = state, viewModel = viewModel, navController = navController
+            )
             if (state.notes.isEmpty()){
                 EmptyEventsIllustration()
             }else {
@@ -166,18 +172,12 @@ fun TopBarSection(
 }
 
 @Composable
-fun FiltersSection() {
-    val filters = listOf("All", "Sport", "Birthday", "Music", "Food", "Travel","Others")
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(filters) { filter ->
-            FilterItem(filter)
-        }
+fun FiltersSection(state : NoteState, viewModel : NotesViewModel, navController: NavController) {
+    CategorySelector(
+        categories = listOf("All","Work", "Education", "Personal", "Sport", "Birthday", "Travel", "Other"),
+        initialSelected = "All"
+    ) { selected ->
+        viewModel.onEvent(NotesEvent.SelectCategory(selected))
     }
 }
 
@@ -200,6 +200,12 @@ fun FilterItem(filter: String) {
 
 @Composable
 fun NonEmptyEventsIllustration(state : NoteState, viewModel : NotesViewModel, navController: NavController) {
+    val filteredNotes = if (state.category == "All" || state.category.isBlank()) {
+        state.notes
+    } else {
+        state.notes.filter { it.category == state.category }
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -207,10 +213,9 @@ fun NonEmptyEventsIllustration(state : NoteState, viewModel : NotesViewModel, na
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        items(state.notes.size) { index ->
+        items(filteredNotes.size) { index ->
             NoteItem(
-                state = state,
-                index = index,
+                note = filteredNotes[index],
                 onEvent = viewModel::onEvent
             )
         }
@@ -239,77 +244,88 @@ fun EmptyEventsIllustration() {
 
 @Composable
 fun NoteItem(
-    state: NoteState,
-    index: Int,
+    note: Note,
     onEvent: (NotesEvent) -> Unit
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer)
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(12.dp)
-    ) {
-        Column(
-            modifier = Modifier.weight(1f)
+    ){
+        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .clip(RoundedCornerShape(10.dp))
+//                .background(MaterialTheme.colorScheme.primaryContainer)
+//                .padding(12.dp)
         ) {
-            Text(
-                text = state.notes[index].title,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0XFF4A5182)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = state.notes[index].description,
-                fontSize = 18.sp,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = state.notes[index].eventDate,
-                    fontSize = 16.sp,
-                    color = Color(0xff000000),
-                    modifier = Modifier.weight(1f)
+                    text = note.title,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0XFF4A5182)
+                )
 
-                )
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
-                    text = state.notes[index].eventTime,
-                    fontSize = 16.sp,
-                    color = Color(0xff000000),
-                    modifier = Modifier.weight(1f)
+                    text = note.description,
+                    fontSize = 18.sp,
+                    color = Color.Black
                 )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = state.notes[index].location,
-                    fontSize = 16.sp,
-                    color = Color(0xff000000),
-                    modifier = Modifier.weight(1f)
+            }
+
+            IconButton(
+                onClick = {
+                    onEvent(NotesEvent.DeleteNote(note))
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = "Delete Note",
+                    modifier = Modifier.size(35.dp),
+                    tint = Color(0XFF4A5182)
                 )
             }
         }
-
-        IconButton(
-            onClick = {
-                onEvent(NotesEvent.DeleteNote(state.notes[index]))
-            }
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(
-                imageVector = Icons.Rounded.Delete,
-                contentDescription = "Delete Note",
-                modifier = Modifier.size(35.dp),
-                tint = Color(0XFF4A5182)
+            Text(
+                text = "\uD83D\uDCC5 ${note.eventDate}",
+                fontSize = 16.sp,
+                color = Color(0xff000000),
+                modifier = Modifier.weight(2f)
+
             )
-
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = note.eventTime,
+                fontSize = 16.sp,
+                color = Color(0xff000000),
+                modifier = Modifier.weight(1f)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "\uD83D\uDCCD${note.location}",
+                fontSize = 16.sp,
+                color = Color(0xff000000),
+                modifier = Modifier.weight(1f)
+            )
         }
-
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = note.category,
+            fontSize = 16.sp,
+            fontStyle = FontStyle.Italic,
+            color = Color.Blue
+        )
     }
 }
 

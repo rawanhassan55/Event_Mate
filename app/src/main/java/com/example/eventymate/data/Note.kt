@@ -12,6 +12,7 @@ data class Note(
     val eventTime : String,
     val location : String,
     val dateAdded: Long,
+    val category: String,
 
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0

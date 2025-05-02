@@ -32,7 +32,9 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             NotesDatabase::class.java,
             "notes.db"
-        ).build()
+        )
+//        .fallbackToDestructiveMigration()
+        .build()
     }
 
     private val viewModel by viewModels<NotesViewModel> (
@@ -44,6 +46,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     )
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
