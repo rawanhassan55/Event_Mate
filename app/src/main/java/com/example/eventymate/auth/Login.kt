@@ -1,5 +1,6 @@
 package com.example.eventymate.auth
 
+import android.app.Activity
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -50,12 +51,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.eventymate.R
+import com.example.eventymate.locale.LocaleHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -77,6 +80,14 @@ fun LoginScreen(
     val coroutineScope = rememberCoroutineScope()
     val googleAuthHelper = remember { GoogleAuthHelper(context) }
     val authState by viewModel.authState.collectAsState()
+    val activity = context as? Activity
+    var selectedLanguage by remember { mutableStateOf(LocaleHelper.getPersistedLanguage(context)) }
+
+    fun changeLanguage(language: String) {
+        selectedLanguage = language
+        LocaleHelper.persistLanguage(context, language)
+        activity?.recreate()
+    }
 
     LaunchedEffect(authState) {
         when (authState) {
@@ -84,9 +95,11 @@ fun LoginScreen(
                 Log.d("AuthDebug", "Login successful, navigating to home")
                 onSignInSuccess()
             }
+
             is AuthState.EmailNotVerified -> {
                 Log.d("AuthDebug", "Email not verified - show warning")
             }
+
             else -> {}
         }
     }
@@ -137,7 +150,7 @@ fun LoginScreen(
             )
 
             Text(
-                text = "Welcome Back!",
+                text = stringResource(id = R.string.welcome_back),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0XFF4A5182),
@@ -145,7 +158,7 @@ fun LoginScreen(
             )
 
             Text(
-                text = "Login to your account",
+                text = stringResource(id = R.string.login_to_account),
                 fontSize = 16.sp,
                 color = Color.Gray,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -158,11 +171,11 @@ fun LoginScreen(
                     Row {
                         Icon(
                             imageVector = Icons.Default.Email,
-                            contentDescription = "Email",
+                            contentDescription = stringResource(id = R.string.email),
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Email")
+                        Text(stringResource(id = R.string.email))
                     }
                 },
                 colors = OutlinedTextFieldDefaults.colors(
@@ -184,13 +197,13 @@ fun LoginScreen(
             PasswordTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = "Enter Password",
+                label = stringResource(id = R.string.login_to_account),
 
                 )
 
             TextButton(onClick = { onNavigateToForgotPassword() }) {
                 Text(
-                    text = "Forgot Password?", Modifier.fillMaxWidth(1f),
+                    text = stringResource(id = R.string.forgot_password), Modifier.fillMaxWidth(1f),
                     style = TextStyle(color = Color(0XFF4A5182))
                 )
             }
@@ -232,7 +245,7 @@ fun LoginScreen(
                     onNavigateToMain()
                 } else {
                     Text(
-                        "Login",
+                        stringResource(id = R.string.login),
                         style = TextStyle(color = Color.White)
                     )
                 }
@@ -247,7 +260,7 @@ fun LoginScreen(
                     color = Color.Gray.copy(alpha = 0.3f)
                 )
                 Text(
-                    text = "Or",
+                    text = stringResource(id = R.string.or),
                     modifier = Modifier.padding(horizontal = 8.dp),
                     color = Color.Gray
                 )
@@ -262,10 +275,10 @@ fun LoginScreen(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Don't have an account?")
+                Text(stringResource(id = R.string.no_account))
                 TextButton(onClick = onNavigateToSignUp) {
                     Text(
-                        "Sign Up",
+                        stringResource(id = R.string.sign_up),
                         style = TextStyle(color = Color(0XFF4A5182))
                     )
                 }
@@ -293,7 +306,7 @@ fun LoginScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        "Login With Google",
+                        stringResource(id = R.string.login_with_google),
                         style = TextStyle(color = Color(0XFF4A5182))
                     )
                 }
@@ -312,10 +325,19 @@ fun LoginScreen(
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
-            var selectedFlag by remember { mutableStateOf("usa") }
 
-            FlagToggle(selectedFlag = selectedFlag) { newFlag ->
-                selectedFlag = newFlag
+            FlagToggle(
+                selectedFlag = when (selectedLanguage) {
+                    "ar" -> "egypt"
+                    else -> "usa"
+                }
+            ) { flag ->
+                changeLanguage(
+                    when (flag) {
+                        "egypt" -> "ar"
+                        else -> "en"
+                    }
+                )
             }
 
 
@@ -328,10 +350,10 @@ fun FlagToggle(
     selectedFlag: String,
     onFlagSelected: (String) -> Unit,
 ) {
-    val flags = listOf("egypt", "usa")
+    val flags = listOf("usa", "egypt")
     val flagImages = mapOf(
-        "egypt" to R.drawable.egypt,
-        "usa" to R.drawable.usa_flag
+        "usa" to R.drawable.usa_flag,
+        "egypt" to R.drawable.egypt
     )
 
     Box(

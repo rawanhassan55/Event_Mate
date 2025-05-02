@@ -1,5 +1,57 @@
 <resources>
-    <string name="app_name">Event Mate</string>
-    <string name="title_activity_main2">MainActivity2</string>
+    <string name="app_name" translatable="false">Event Mate</string>
     <string name="default_web_client_id">YOUR_CLIENT_ID_HERE.apps.googleusercontent.com</string>
+    <string name="welcome_back">Welcome Back!</string>
+    <string name="login_to_account">Login to your account</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="login">Login</string>
+    <string name="or">Or</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="login_with_google">Login With Google</string>
+    <string name="app_logo_desc">App Logo</string>
+    <string name="create_account">Create your new account</string>
+    <string name="name">Name</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="enter_password_again">Enter Password Again</string>
+    <string name="create_account_button">Create Account</string>
+    <string name="already_have_account">Already Have Account?</string>
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
+    <string name="error_fill_all_fields">Please fill in all fields</string>
+    <string name="error_password_short">Password must be at least 6 characters</string>
+    <string name="error_password_mismatch">Passwords don\'t match</string>
+    <string name="error_verification_email_failed">Failed to send verification email</string>
+    <string name="error_signup_failed">Signup failed</string>
+    <!-- TopBarSection -->
+    <string name="welcom">Welcome Back ✨</string>
+    <string name="user_name_placeholder">Rawan Hassan</string>
+    <string name="language_code">EN</string>
+    <string name="toggle_theme_description">Toggle Theme</string>
+
+    <!-- Filter Section -->
+    <string name="filter_all">All</string>
+    <string name="filter_sport">Sport</string>
+    <string name="filter_birthday">Birthday</string>
+    <string name="filter_music">Music</string>
+    <string name="filter_food">Food</string>
+    <string name="filter_travel">Travel</string>
+    <string name="filter_others">Others</string>
+
+    <!-- Empty Events -->
+    <string name="no_events_description">No Events</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_map">Map</string>
+    <string name="nav_love">Love</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Floating Action Button -->
+    <string name="fab_create_event">Create Event</string>
+
+    <!-- Actions -->
+    <string name="delete_note">Delete Note</string>
 </resources>

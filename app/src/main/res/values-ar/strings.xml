@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_back">مرحبًا بعودتك!</string>
+    <string name="login_to_account">سجل الدخول إلى حسابك</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="password">كلمة المرور</string>
+    <string name="forgot_password">هل نسيت كلمة السر؟</string>
+    <string name="login">تسجيل الدخول</string>
+    <string name="or">أو</string>
+    <string name="no_account">ليس لديك حساب؟</string>
+    <string name="login_with_google">تسجيل الدخول باستخدام جوجل</string>
+    <string name="app_logo_desc">شعار التطبيق</string>
+    <string name="sign_up">تسجيل</string>
+    <string name="create_account">أنشئ حسابًا جديدًا</string>
+    <string name="name">الاسم</string>
+    <string name="enter_password">أدخل كلمة المرور</string>
+    <string name="enter_password_again">أدخل كلمة المرور مرة أخرى</string>
+    <string name="create_account_button">أنشئ الحساب</string>
+    <string name="already_have_account">هل لديك حساب؟</string>
+    <string name="hide_password">إخفاء كلمة المرور</string>
+    <string name="show_password">عرض كلمة المرور</string>
+
+    <!-- Error messages -->
+    <string name="error_fill_all_fields">يرجى ملء جميع الحقول</string>
+    <string name="error_password_short">يجب أن تكون كلمة المرور 6 أحرف على الأقل</string>
+    <string name="error_password_mismatch">كلمتا المرور غير متطابقتين</string>
+    <string name="error_verification_email_failed">فشل إرسال رسالة التحقق</string>
+    <string name="error_signup_failed">فشل التسجيل</string>
+    <string name="welcom">مرحبًا بعودتك ✨</string>
+    <string name="user_name_placeholder">روان حسن</string>
+    <string name="language_code">ع</string>
+    <string name="toggle_theme_description">تبديل الوضع</string>
+
+    <string name="filter_all">الكل</string>
+    <string name="filter_sport">رياضة</string>
+    <string name="filter_birthday">عيد ميلاد</string>
+    <string name="filter_music">موسيقى</string>
+    <string name="filter_food">طعام</string>
+    <string name="filter_travel">سفر</string>
+    <string name="filter_others">أخرى</string>
+
+    <string name="no_events_description">لا توجد أحداث</string>
+
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_map">الخريطة</string>
+    <string name="nav_love">المفضلة</string>
+    <string name="nav_profile">الملف الشخصي</string>
+
+    <string name="fab_create_event">إنشاء حدث</string>
+    <string name="delete_note">حذف</string>
+</resources>
