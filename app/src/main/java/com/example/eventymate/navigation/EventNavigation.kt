@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.eventymate.HomeScreen
 import com.example.eventymate.auth.AuthViewModel
 import com.example.eventymate.auth.EmailVerificationScreen
 import com.example.eventymate.auth.ForgotPasswordScreen
@@ -16,7 +17,6 @@ import com.example.eventymate.auth.PreferencesHelper
 import com.example.eventymate.auth.SignUpScreen
 import com.example.eventymate.presentation.NoteState
 import com.example.eventymate.presentation.NotesViewModel
-import com.example.eventymate.screens.HomeScreen
 import com.example.eventymate.screens.SettingsScreen
 import com.example.eventymate.screens.SplashScreen
 import com.example.eventymate.screens.eventadd.CreateEventScreen

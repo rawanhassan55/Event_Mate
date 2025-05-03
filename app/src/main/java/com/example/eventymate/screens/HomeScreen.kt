@@ -43,6 +43,7 @@ fun HomeScreen(
 
 package com.example.eventymate
 
+
 import androidx.navigation.compose.rememberNavController
 
 
@@ -68,19 +69,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import com.example.eventymate.data.Note
 import com.example.eventymate.presentation.NoteState
 import com.example.eventymate.presentation.NotesEvent
 import com.example.eventymate.presentation.NotesViewModel
+import com.example.eventymate.screens.eventadd.CategorySelector
+import java.util.Locale
+import androidx.compose.material3.MaterialTheme
 
 @Composable
-fun HomeScreen(navController: NavController,onCreateEventNavigation: () -> Unit
-               , state : NoteState,
-               viewModel : NotesViewModel) {
+fun HomeScreen(
+    navController: NavController,
+    onCreateEventNavigation: () -> Unit,
+    state: NoteState,
+    viewModel: NotesViewModel,
+    onLanguageToggle: (String) -> Unit
+) {
     Scaffold(
         bottomBar = { EventMateBottomNavigation(navController) },
         floatingActionButton = {
@@ -92,7 +103,12 @@ fun HomeScreen(navController: NavController,onCreateEventNavigation: () -> Unit
         },
         floatingActionButtonPosition = FabPosition.Center,
         isFloatingActionButtonDocked = true,
-        topBar = { TopBarSection() }
+        topBar = {
+            TopBarSection(onLanguageClick = {
+                val newLang = if (Locale.getDefault().language == "en") "ar" else "en"
+                onLanguageToggle(newLang)
+            })
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -101,7 +117,9 @@ fun HomeScreen(navController: NavController,onCreateEventNavigation: () -> Unit
                 //.verticalScroll(rememberScrollState())
         ) {
 
-            FiltersSection()
+            FiltersSection(
+                state = state, viewModel = viewModel, navController = navController
+            )
             if (state.notes.isEmpty()){
                 EmptyEventsIllustration()
             }else {
@@ -130,7 +148,7 @@ fun TopBarSection(
     ) {
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                text = "Welcome Back ✨",
+                text = stringResource(id = R.string.welcom),
                 color = Color.White,
                 fontSize = 14.sp
             )
@@ -144,7 +162,7 @@ fun TopBarSection(
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "EN",
+                text = if (Locale.getDefault().language == "en") "AR" else "EN",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -153,7 +171,7 @@ fun TopBarSection(
             )
             Icon(
                 imageVector = Icons.Default.WbSunny,
-                contentDescription = "Toggle Theme",
+                contentDescription = stringResource(id = R.string.toggle_theme_description),
                 tint = Color.White,
                 modifier = Modifier
                     .size(24.dp)
@@ -166,18 +184,22 @@ fun TopBarSection(
 }
 
 @Composable
-fun FiltersSection() {
-    val filters = listOf("All", "Sport", "Birthday", "Music", "Food", "Travel","Others")
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(filters) { filter ->
-            FilterItem(filter)
-        }
+fun FiltersSection(state : NoteState, viewModel : NotesViewModel, navController: NavController) {
+
+    CategorySelector(
+        categories = listOf(
+            stringResource(id = R.string.filter_all),
+            stringResource(id = R.string.filter_work),
+            stringResource(id = R.string.filter_education),
+            stringResource(id = R.string.filter_personal),
+            stringResource(id = R.string.filter_sport),
+            stringResource(id = R.string.filter_birthday),
+            stringResource(id = R.string.filter_travel),
+            stringResource(id = R.string.filter_others)
+        ),
+        initialSelected = stringResource(id = R.string.filter_all),
+        ) { selected ->
+        viewModel.onEvent(NotesEvent.SelectCategory(selected))
     }
 }
 
@@ -200,6 +222,12 @@ fun FilterItem(filter: String) {
 
 @Composable
 fun NonEmptyEventsIllustration(state : NoteState, viewModel : NotesViewModel, navController: NavController) {
+
+    val filteredNotes = if (state.category == stringResource(id = R.string.filter_all) || state.category.isBlank()) {
+        state.notes
+    } else {
+        state.notes.filter { it.category == state.category }
+    }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -207,10 +235,9 @@ fun NonEmptyEventsIllustration(state : NoteState, viewModel : NotesViewModel, na
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        items(state.notes.size) { index ->
+        items(filteredNotes.size) { index ->
             NoteItem(
-                state = state,
-                index = index,
+                note = filteredNotes[index],
                 onEvent = viewModel::onEvent
             )
         }
@@ -228,7 +255,7 @@ fun EmptyEventsIllustration() {
 
         Image(
             painter = painterResource(id = R.drawable.event_busy),
-            contentDescription = "No Events",
+            contentDescription = stringResource(id = R.string.no_events_description),
             modifier = Modifier
                 .size(150.dp)
         )
@@ -239,96 +266,86 @@ fun EmptyEventsIllustration() {
 
 @Composable
 fun NoteItem(
-    state: NoteState,
-    index: Int,
+    note: Note,
     onEvent: (NotesEvent) -> Unit
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer)
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(12.dp)
     ) {
-        Column(
-            modifier = Modifier.weight(1f)
+        Row(
+            //            modifier = Modifier
+            //                .fillMaxWidth()
+            //                .clip(RoundedCornerShape(10.dp))
+            //                .background(MaterialTheme.colorScheme.primaryContainer)
+            //                .padding(12.dp)
         ) {
-            Text(
-                text = state.notes[index].title,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0XFF4A5182)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = state.notes[index].description,
-                fontSize = 18.sp,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = state.notes[index].eventDate,
-                    fontSize = 16.sp,
-                    color = Color(0xff000000),
-                    modifier = Modifier.weight(1f)
-
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = state.notes[index].eventTime,
-                    fontSize = 16.sp,
-                    color = Color(0xff000000),
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = state.notes[index].location,
-                    fontSize = 16.sp,
-                    color = Color(0xff000000),
-                    modifier = Modifier.weight(1f)
-                )
+                    Text(
+                        text = note.title,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0XFF4A5182)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = note.description,
+                        fontSize = 18.sp,
+                        color = Color.Black
+                    )
             }
-        }
-
-        IconButton(
-            onClick = {
-                onEvent(NotesEvent.DeleteNote(state.notes[index]))
+                IconButton(
+                    onClick = {
+                        onEvent(NotesEvent.DeleteNote(note))
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = "Delete Note",
+                        modifier = Modifier.size(35.dp),
+                        tint = Color(0XFF4A5182)
+                    )
+                }
             }
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(
-                imageVector = Icons.Rounded.Delete,
-                contentDescription = "Delete Note",
-                modifier = Modifier.size(35.dp),
-                tint = Color(0XFF4A5182)
+            Text(
+                text = "\uD83D\uDCC5 ${note.eventDate}",
+                fontSize = 14.sp,
+                color = Color(0xff000000),
+                modifier = Modifier.weight(2f)
             )
-
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = note.eventTime,
+                fontSize = 16.sp,
+                color = Color(0xff000000),
+                modifier = Modifier.weight(1f)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "\uD83D\uDCCD${note.location}",
+                fontSize = 16.sp,
+                color = Color(0xff000000),
+                modifier = Modifier.weight(1f)
+            )
         }
-
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = note.category,
+            fontSize = 16.sp,
+            fontStyle = FontStyle.Italic,
+            color = Color.Blue
+        )
+        }
     }
-}
-
-
-@Composable
-fun FloatingCreateEventButton(onCreateEventNavigation: () -> Unit) {
-    FloatingActionButton(
-        onClick = {
-            onCreateEventNavigation()
-        },
-        backgroundColor =Color(0XFF4A5182) ,
-        modifier = Modifier.padding(8.dp)
-        //.align(Alignment.BottomCenter)
-
-
-    ) {
-        Icon(imageVector = Icons.Default.Add, contentDescription = "Create Event", tint = Color.White)
-    }
-}
 
 @Composable
 fun EventMateBottomNavigation(navController: NavController) {
@@ -339,47 +356,96 @@ fun EventMateBottomNavigation(navController: NavController) {
     ) {
         BottomNavigationItem(
             selected = selectedItem == 0,
-            onClick = { selectedItem = 0
+            onClick = {
+                selectedItem = 0
                 navController.navigate("home")
-                      },
-            icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home", tint = Color.White) },
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Home,
+                    contentDescription = "Home",
+                    tint = Color.White
+                )
+            },
             label = { Text("Home") }
         )
         BottomNavigationItem(
             selected = selectedItem == 1,
             onClick = { selectedItem = 1 },
-            icon = { Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Map", tint = Color.White) },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "Map",
+                    tint = Color.White
+                )
+            },
             label = { Text("Map") }
         )
         Spacer(Modifier.weight(1f, true))
         BottomNavigationItem(
             selected = selectedItem == 2,
             onClick = { selectedItem = 2 },
-            icon = { Icon(imageVector = Icons.Default.Favorite, contentDescription = "Love", tint = Color.White) },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Love",
+                    tint = Color.White
+                )
+            },
             label = { Text("Love") }
         )
         BottomNavigationItem(
             selected = selectedItem == 3,
-            onClick = { selectedItem = 3
+            onClick = {
+                selectedItem = 3
                 navController.navigate("profile")
-                      },
-            icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "Profile", tint = Color.White) },
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Profile",
+                    tint = Color.White
+                )
+            },
             label = { Text("Profile") }
         )
 
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
-    HomeScreen(
-        navController = rememberNavController(),
-        onCreateEventNavigation = {},
-        state = TODO(),
-        viewModel = TODO(),
-    )
+fun FloatingCreateEventButton(onCreateEventNavigation: () -> Unit) {
+    FloatingActionButton(
+        onClick = {
+            onCreateEventNavigation()
+        },
+        backgroundColor = Color(0XFF4A5182),
+        modifier = Modifier.padding(8.dp)
+        //.align(Alignment.BottomCenter)
+
+
+    ) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = "Create Event",
+            tint = Color.White
+        )
+    }
 }
+
+
+
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenPreview() {
+//    HomeScreen(
+//        navController = rememberNavController(),
+//        onCreateEventNavigation = {},
+//        state = TODO(),
+//        viewModel = TODO(),
+//    )
+//}
 
 
 

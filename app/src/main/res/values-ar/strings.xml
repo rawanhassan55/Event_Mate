@@ -32,12 +32,15 @@
     <string name="toggle_theme_description">تبديل الوضع</string>
 
     <string name="filter_all">الكل</string>
+    <string name="filter_work">شغل</string>
+    <string name="filter_education">تعليم</string>
+    <string name="filter_personal">شخصي</string>
     <string name="filter_sport">رياضة</string>
     <string name="filter_birthday">عيد ميلاد</string>
-    <string name="filter_music">موسيقى</string>
-    <string name="filter_food">طعام</string>
     <string name="filter_travel">سفر</string>
     <string name="filter_others">أخرى</string>
+
+
 
     <string name="no_events_description">لا توجد أحداث</string>
 

@@ -33,10 +33,11 @@
 
     <!-- Filter Section -->
     <string name="filter_all">All</string>
+    <string name="filter_work">Work</string>
+    <string name="filter_education">Education</string>
+    <string name="filter_personal">Personal</string>
     <string name="filter_sport">Sport</string>
     <string name="filter_birthday">Birthday</string>
-    <string name="filter_music">Music</string>
-    <string name="filter_food">Food</string>
     <string name="filter_travel">Travel</string>
     <string name="filter_others">Others</string>
 

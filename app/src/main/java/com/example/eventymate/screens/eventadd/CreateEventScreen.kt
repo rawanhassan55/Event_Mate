@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,7 +77,15 @@ fun CreateEventScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        val eventCategories = listOf("Work", "Education", "Personal", "Sport", "Birthday", "Travel", "Other")
+        val eventCategories = listOf(
+            stringResource(id = R.string.filter_work),
+            stringResource(id = R.string.filter_education),
+            stringResource(id = R.string.filter_personal),
+            stringResource(id = R.string.filter_sport),
+            stringResource(id = R.string.filter_birthday),
+            stringResource(id = R.string.filter_travel),
+            stringResource(id = R.string.filter_others)
+        )
 
         CategorySelector(categories = eventCategories) { selected ->
             // Handle category selection here
