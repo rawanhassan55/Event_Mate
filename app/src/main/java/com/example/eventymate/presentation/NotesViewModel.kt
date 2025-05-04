@@ -1,6 +1,7 @@
 package com.example.eventymate.presentation
 
 import android.util.Log
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,8 +16,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class NotesViewModel(
-    private val dao: NoteDao
+    private val dao: NoteDao,
 ) : ViewModel() {
+
+    // Theme state management
+    private val _isDarkTheme = mutableStateOf(false)
+    val isDarkTheme: State<Boolean> = _isDarkTheme
 
     private val isSortedByDateAdded = MutableStateFlow(true)
 
@@ -36,6 +41,10 @@ class NotesViewModel(
                 notes = notes
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NoteState())
+
+    fun toggleTheme() {
+        _isDarkTheme.value = !_isDarkTheme.value
+    }
 
     fun onEvent(event: NotesEvent) {
         when (event) {

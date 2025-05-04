@@ -31,6 +31,7 @@ import com.example.eventymate.presentation.NotesEvent
 import com.example.eventymate.screens.eventadd.components.CustomButton
 import com.example.eventymate.screens.eventadd.components.CustomTextField
 import com.example.eventymate.screens.eventadd.components.DateTimePicker
+import com.example.eventymate.ui.theme.ThemeColors
 
 
 @Composable
@@ -88,7 +89,6 @@ fun CreateEventScreen(
         )
 
         CategorySelector(categories = eventCategories) { selected ->
-            // Handle category selection here
             println("Selected Category: $selected")
             state.category = selected
         }
@@ -220,6 +220,8 @@ fun CreateEventScreen(
 fun CategorySelector(
     categories: List<String>,
     initialSelected: String = "",
+    filterColor: Color = Color(0xFF6200EE),
+    textColor: Color = Color.Black,
     onCategorySelected: (String) -> Unit
 ) {
     var selectedCategory by remember { mutableStateOf(initialSelected) }
@@ -240,7 +242,7 @@ fun CategorySelector(
                         onCategorySelected(category)
                     }
                     .background(
-                        if (isSelected) Color(0xFF6200EE) else Color.LightGray,
+                        if (isSelected) filterColor else ThemeColors.Day.surafce,
                         shape = RoundedCornerShape(20.dp)
                     )
                     .padding(horizontal = 16.dp, vertical = 8.dp)

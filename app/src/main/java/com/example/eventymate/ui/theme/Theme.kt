@@ -12,15 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = ThemeColors.Night.primary,
+    onPrimary = ThemeColors.Night.text,
+    surface = ThemeColors.Night.surafce,
+    background = ThemeColors.Night.bacground
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = ThemeColors.Day.primary,
+    onPrimary = ThemeColors.Day.text,
+    surface = ThemeColors.Day.surafce,
+    background = ThemeColors.Day.bacground
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -38,20 +40,27 @@ fun EventyMateTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
+    val colors = if (darkTheme) {
+        DarkColorScheme
+    } else {
+        LightColorScheme
+    }
+
     val colorScheme = when {
-      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-        val context = LocalContext.current
-        if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-      }
-      darkTheme -> DarkColorScheme
-      else -> LightColorScheme
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+
+        darkTheme -> DarkColorScheme
+        else -> LightColorScheme
     }
 
     MaterialTheme(
-      colorScheme = colorScheme,
-      typography = Typography,
-      content = content
+        colorScheme = colors,
+        typography = Typography,
+        content = content
     )
 }

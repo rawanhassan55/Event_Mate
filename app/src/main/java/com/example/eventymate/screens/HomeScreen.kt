@@ -1,53 +1,6 @@
-/*package com.example.eventymate
-
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-
-@Composable
-fun HomeScreen(
-    navController: NavController,
-    viewModel: AuthViewModel,
-    onSettingNavigation: () -> Unit,
-    onSignOut: () -> Unit = {},
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxSize()
-    ) {
-        Button(onClick = { onSettingNavigation() }) {
-            Text(text = "Settings")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        IconButton(onClick = {onSignOut() }) {
-            Icon(Icons.Filled.ExitToApp, contentDescription = "Localized description")
-        }
-    }
-}
-*/
-
 package com.example.eventymate
 
-
 import androidx.navigation.compose.rememberNavController
-
-
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -81,6 +34,7 @@ import com.example.eventymate.presentation.NoteState
 import com.example.eventymate.presentation.NotesEvent
 import com.example.eventymate.presentation.NotesViewModel
 import com.example.eventymate.screens.eventadd.CategorySelector
+import com.example.eventymate.ui.theme.ThemeColors
 import java.util.Locale
 import androidx.compose.material3.MaterialTheme
 
@@ -90,41 +44,67 @@ fun HomeScreen(
     onCreateEventNavigation: () -> Unit,
     state: NoteState,
     viewModel: NotesViewModel,
-    onLanguageToggle: (String) -> Unit
+    onLanguageToggle: (String) -> Unit,
+    isDarkTheme: Boolean,
+    onThemeToggle: () -> Unit,
 ) {
+    val colors = if (isDarkTheme) ThemeColors.Night else ThemeColors.Day
+
     Scaffold(
-        bottomBar = { EventMateBottomNavigation(navController) },
+        bottomBar = {
+            EventMateBottomNavigation(
+                navController = navController,
+                backgroundColor = colors.surafce,
+                contentColor = colors.text
+            )
+        },
         floatingActionButton = {
             FloatingCreateEventButton(
                 onCreateEventNavigation = {
                     navController.navigate("createEvent")
-                }
+                },
+                backgroundColor = colors.primary
             )
         },
         floatingActionButtonPosition = FabPosition.Center,
         isFloatingActionButtonDocked = true,
         topBar = {
-            TopBarSection(onLanguageClick = {
-                val newLang = if (Locale.getDefault().language == "en") "ar" else "en"
-                onLanguageToggle(newLang)
-            })
-        }
+            TopBarSection(
+                onLanguageClick = {
+                    val newLang = if (Locale.getDefault().language == "en") "ar" else "en"
+                    onLanguageToggle(newLang)
+                },
+                onThemeToggle = onThemeToggle,
+                backgroundColor = colors.primary,
+                contentColor = colors.text,
+                isDarkTheme = isDarkTheme
+            )
+        },
+        backgroundColor = colors.bacground
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                //.verticalScroll(rememberScrollState())
         ) {
-
             FiltersSection(
-                state = state, viewModel = viewModel, navController = navController
+                state = state,
+                viewModel = viewModel,
+                navController = navController,
+                filterColor = colors.primary,
+                textColor = colors.text
             )
-            if (state.notes.isEmpty()){
+
+            if (state.notes.isEmpty()) {
                 EmptyEventsIllustration()
-            }else {
+            } else {
                 NonEmptyEventsIllustration(
-                    state = state, viewModel = viewModel, navController = navController
+                    state = state,
+                    viewModel = viewModel,
+                    navController = navController,
+                    containerColor = colors.surafce,
+                    textColor = colors.text,
+                    isDarkTheme = isDarkTheme
                 )
             }
         }
@@ -135,13 +115,16 @@ fun HomeScreen(
 fun TopBarSection(
     userName: String = "Rawan Hassan",
     onLanguageClick: () -> Unit = {},
-    onThemeToggle: () -> Unit = {}
+    onThemeToggle: () -> Unit = {},
+    backgroundColor: Color,
+    contentColor: Color,
+    isDarkTheme: Boolean,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .background(Color(0XFF4A5182))
+            .background(backgroundColor)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -149,12 +132,12 @@ fun TopBarSection(
         Column(horizontalAlignment = Alignment.End) {
             Text(
                 text = stringResource(id = R.string.welcom),
-                color = Color.White,
+                color = contentColor,
                 fontSize = 14.sp
             )
             Text(
                 text = userName,
-                color = Color.White,
+                color = contentColor,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
@@ -163,29 +146,32 @@ fun TopBarSection(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = if (Locale.getDefault().language == "en") "AR" else "EN",
-                color = Color.White,
+                color = contentColor,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .clickable { onLanguageClick() }
                     .padding(end = 12.dp)
             )
             Icon(
-                imageVector = Icons.Default.WbSunny,
+                imageVector = if (isDarkTheme) Icons.Default.WbSunny else Icons.Default.DarkMode,
                 contentDescription = stringResource(id = R.string.toggle_theme_description),
-                tint = Color.White,
+                tint = contentColor,
                 modifier = Modifier
                     .size(24.dp)
                     .clickable { onThemeToggle() }
             )
         }
-
-
     }
 }
 
 @Composable
-fun FiltersSection(state : NoteState, viewModel : NotesViewModel, navController: NavController) {
-
+fun FiltersSection(
+    state: NoteState,
+    viewModel: NotesViewModel,
+    navController: NavController,
+    filterColor: Color,
+    textColor: Color,
+) {
     CategorySelector(
         categories = listOf(
             stringResource(id = R.string.filter_all),
@@ -198,16 +184,23 @@ fun FiltersSection(state : NoteState, viewModel : NotesViewModel, navController:
             stringResource(id = R.string.filter_others)
         ),
         initialSelected = stringResource(id = R.string.filter_all),
-        ) { selected ->
-        viewModel.onEvent(NotesEvent.SelectCategory(selected))
-    }
+        filterColor = filterColor,
+        textColor = textColor,
+        onCategorySelected = { selected ->
+            viewModel.onEvent(NotesEvent.SelectCategory(selected))
+        }
+    )
 }
 
 @Composable
-fun FilterItem(filter: String) {
+fun FilterItem(
+    filter: String,
+    filterColor: Color,
+    textColor: Color,
+) {
     Surface(
         shape = CircleShape,
-        color = Color(0XFF4A5182).copy(alpha = 0.1f),
+        color = filterColor.copy(alpha = 0.1f),
         modifier = Modifier
             .height(40.dp)
     ) {
@@ -215,30 +208,44 @@ fun FilterItem(filter: String) {
             contentAlignment = Alignment.Center,
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            Text(text = filter, fontWeight = FontWeight.Medium)
+            Text(
+                text = filter,
+                fontWeight = FontWeight.Medium,
+                color = textColor
+            )
         }
     }
 }
 
 @Composable
-fun NonEmptyEventsIllustration(state : NoteState, viewModel : NotesViewModel, navController: NavController) {
+fun NonEmptyEventsIllustration(
+    state: NoteState,
+    viewModel: NotesViewModel,
+    navController: NavController,
+    containerColor: Color,
+    textColor: Color,
+    isDarkTheme: Boolean,
+) {
+    val filteredNotes =
+        if (state.category == stringResource(id = R.string.filter_all) || state.category.isBlank()) {
+            state.notes
+        } else {
+            state.notes.filter { it.category == state.category }
+        }
 
-    val filteredNotes = if (state.category == stringResource(id = R.string.filter_all) || state.category.isBlank()) {
-        state.notes
-    } else {
-        state.notes.filter { it.category == state.category }
-    }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-
         items(filteredNotes.size) { index ->
             NoteItem(
                 note = filteredNotes[index],
-                onEvent = viewModel::onEvent
+                onEvent = viewModel::onEvent,
+                containerColor = containerColor,
+                textColor = textColor,
+                isDarkTheme = isDarkTheme
             )
         }
     }
@@ -252,66 +259,60 @@ fun EmptyEventsIllustration() {
             .padding(top = 50.dp),
         contentAlignment = Alignment.TopCenter
     ) {
-
         Image(
             painter = painterResource(id = R.drawable.event_busy),
             contentDescription = stringResource(id = R.string.no_events_description),
             modifier = Modifier
                 .size(150.dp)
         )
-
     }
 }
-
 
 @Composable
 fun NoteItem(
     note: Note,
-    onEvent: (NotesEvent) -> Unit
+    onEvent: (NotesEvent) -> Unit,
+    containerColor: Color,
+    textColor: Color,
+    isDarkTheme: Boolean,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer)
+            .background(containerColor)
             .padding(12.dp)
     ) {
-        Row(
-            //            modifier = Modifier
-            //                .fillMaxWidth()
-            //                .clip(RoundedCornerShape(10.dp))
-            //                .background(MaterialTheme.colorScheme.primaryContainer)
-            //                .padding(12.dp)
-        ) {
+        Row {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                    Text(
-                        text = note.title,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color(0XFF4A5182)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = note.description,
-                        fontSize = 18.sp,
-                        color = Color.Black
-                    )
+                Text(
+                    text = note.title,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = textColor
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = note.description,
+                    fontSize = 18.sp,
+                    color = textColor
+                )
             }
-                IconButton(
-                    onClick = {
-                        onEvent(NotesEvent.DeleteNote(note))
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Delete,
-                        contentDescription = "Delete Note",
-                        modifier = Modifier.size(35.dp),
-                        tint = Color(0XFF4A5182)
-                    )
+            IconButton(
+                onClick = {
+                    onEvent(NotesEvent.DeleteNote(note))
                 }
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = "Delete Note",
+                    modifier = Modifier.size(35.dp),
+                    tint = textColor
+                )
             }
+        }
         Spacer(modifier = Modifier.height(12.dp))
         Row(
             modifier = Modifier.fillMaxWidth()
@@ -319,21 +320,21 @@ fun NoteItem(
             Text(
                 text = "\uD83D\uDCC5 ${note.eventDate}",
                 fontSize = 14.sp,
-                color = Color(0xff000000),
+                color = textColor,
                 modifier = Modifier.weight(2f)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = note.eventTime,
                 fontSize = 16.sp,
-                color = Color(0xff000000),
+                color = textColor,
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = "\uD83D\uDCCD${note.location}",
                 fontSize = 16.sp,
-                color = Color(0xff000000),
+                color = textColor,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -342,17 +343,21 @@ fun NoteItem(
             text = note.category,
             fontSize = 16.sp,
             fontStyle = FontStyle.Italic,
-            color = Color.Blue
+            color = if (isDarkTheme) Color.Cyan else Color.Blue
         )
-        }
     }
+}
 
 @Composable
-fun EventMateBottomNavigation(navController: NavController) {
+fun EventMateBottomNavigation(
+    navController: NavController,
+    backgroundColor: Color,
+    contentColor: Color,
+) {
     var selectedItem by remember { mutableStateOf(0) }
     BottomAppBar(
         cutoutShape = CircleShape,
-        backgroundColor = Color(0XFF4A5182)
+        backgroundColor = backgroundColor
     ) {
         BottomNavigationItem(
             selected = selectedItem == 0,
@@ -364,10 +369,15 @@ fun EventMateBottomNavigation(navController: NavController) {
                 Icon(
                     imageVector = Icons.Default.Home,
                     contentDescription = "Home",
-                    tint = Color.White
+                    tint = contentColor
                 )
             },
-            label = { Text("Home") }
+            label = {
+                Text(
+                    text = "Home",
+                    color = contentColor
+                )
+            }
         )
         BottomNavigationItem(
             selected = selectedItem == 1,
@@ -376,10 +386,15 @@ fun EventMateBottomNavigation(navController: NavController) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = "Map",
-                    tint = Color.White
+                    tint = contentColor
                 )
             },
-            label = { Text("Map") }
+            label = {
+                Text(
+                    text = "Map",
+                    color = contentColor
+                )
+            }
         )
         Spacer(Modifier.weight(1f, true))
         BottomNavigationItem(
@@ -389,10 +404,15 @@ fun EventMateBottomNavigation(navController: NavController) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
                     contentDescription = "Love",
-                    tint = Color.White
+                    tint = contentColor
                 )
             },
-            label = { Text("Love") }
+            label = {
+                Text(
+                    text = "Love",
+                    color = contentColor
+                )
+            }
         )
         BottomNavigationItem(
             selected = selectedItem == 3,
@@ -404,26 +424,30 @@ fun EventMateBottomNavigation(navController: NavController) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Profile",
-                    tint = Color.White
+                    tint = contentColor
                 )
             },
-            label = { Text("Profile") }
+            label = {
+                Text(
+                    text = "Profile",
+                    color = contentColor
+                )
+            }
         )
-
     }
 }
 
 @Composable
-fun FloatingCreateEventButton(onCreateEventNavigation: () -> Unit) {
+fun FloatingCreateEventButton(
+    onCreateEventNavigation: () -> Unit,
+    backgroundColor: Color,
+) {
     FloatingActionButton(
         onClick = {
             onCreateEventNavigation()
         },
-        backgroundColor = Color(0XFF4A5182),
+        backgroundColor = backgroundColor,
         modifier = Modifier.padding(8.dp)
-        //.align(Alignment.BottomCenter)
-
-
     ) {
         Icon(
             imageVector = Icons.Default.Add,
@@ -432,24 +456,3 @@ fun FloatingCreateEventButton(onCreateEventNavigation: () -> Unit) {
         )
     }
 }
-
-
-
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun HomeScreenPreview() {
-//    HomeScreen(
-//        navController = rememberNavController(),
-//        onCreateEventNavigation = {},
-//        state = TODO(),
-//        viewModel = TODO(),
-//    )
-//}
-
-
-
-
-
-
-

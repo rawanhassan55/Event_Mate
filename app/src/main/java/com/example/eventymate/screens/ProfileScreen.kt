@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.eventymate.R
+import com.example.eventymate.ui.theme.ThemeColors
 
 
 @Composable
@@ -30,7 +31,7 @@ fun ProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(ThemeColors.Night.surafce)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

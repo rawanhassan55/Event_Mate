@@ -119,7 +119,9 @@ fun EventNavigation(
                 onCreateEventNavigation = { navController.navigate("createEvent") },
                 state = state,
                 viewModel = viewModel,
-                onLanguageToggle = onLanguageToggle
+                onLanguageToggle = onLanguageToggle,
+                onThemeToggle = { viewModel.toggleTheme() },
+                isDarkTheme = viewModel.isDarkTheme.value
             )
         }
 
