@@ -2,6 +2,7 @@ package com.example.eventymate.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 
 @Entity
 data class Note(
@@ -12,6 +13,7 @@ data class Note(
     val eventTime : String,
     val location : String,
     val dateAdded: Long,
+    val date: Date,
     val category: String,
 
     @PrimaryKey(autoGenerate = true)

@@ -1,10 +1,17 @@
 package com.example.eventymate.presentation
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import com.example.eventymate.Notification.EventNotificationWorker
 import com.example.eventymate.data.Note
 import com.example.eventymate.data.NoteDao
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,10 +21,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 class NotesViewModel(
     private val dao: NoteDao,
-) : ViewModel() {
+    application: Application
+) : AndroidViewModel(application) {
 
     // Theme state management
     private val _isDarkTheme = mutableStateOf(false)
@@ -46,6 +56,40 @@ class NotesViewModel(
         _isDarkTheme.value = !_isDarkTheme.value
     }
 
+    private fun scheduleNotification(note: Note) {
+        val currentTime = System.currentTimeMillis()
+        val eventTime = note.date.time
+        val delay = eventTime - currentTime
+
+        Log.d("NotificationDebug", "Attempting to schedule notification for note: ${note.id}")
+        Log.d("NotificationDebug", "Current time: $currentTime, Note time: $eventTime, Delay: $delay ms")
+
+        if (eventTime > currentTime) {
+            val inputData = workDataOf(
+                "NOTE_ID" to note.id,
+                "NOTE_TITLE" to note.title
+            )
+
+            Log.d("NotificationDebug", "Creating work request with data: $inputData")
+
+            val notificationWork = OneTimeWorkRequestBuilder<EventNotificationWorker>()
+                .setInputData(inputData)
+                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                .addTag("event_notification_${note.id}")
+                .build()
+
+            WorkManager.getInstance(getApplication()).enqueueUniqueWork(
+                "event_notification_${note.id}",
+                ExistingWorkPolicy.REPLACE,
+                notificationWork
+            )
+
+            Log.d("NotificationDebug", "Work enqueued with ID: ${notificationWork.id}")
+        } else {
+            Log.d("NotificationDebug", "Event time is in the past, not scheduling")
+        }
+    }
+
     fun onEvent(event: NotesEvent) {
         when (event) {
             is NotesEvent.DeleteNote -> {
@@ -62,10 +106,12 @@ class NotesViewModel(
                     eventTime = state.value.eventTime.value,
                     location = state.value.location.value,
                     category = state.value.category,
-                    dateAdded = System.currentTimeMillis()
+                    dateAdded = System.currentTimeMillis(),
+                    date =  Date(System.currentTimeMillis() + 5000)
                 )
 
                 viewModelScope.launch {
+                    scheduleNotification(note)
                     dao.upsertNote(note)
                 }
 
@@ -88,6 +134,8 @@ class NotesViewModel(
             NotesEvent.SortNotes -> {
                 isSortedByDateAdded.value = !isSortedByDateAdded.value
             }
+
+            else -> {}
         }
     }
 

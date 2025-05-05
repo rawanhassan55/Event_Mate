@@ -1,4 +1,5 @@
 package com.example.eventymate.Notification
+
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -19,8 +20,8 @@ class EventNotificationWorker(
     override fun doWork(): Result {
         Log.d("NotificationDebug", "Worker started")
 
-        val eventId = inputData.getInt("EVENT_ID", -1)
-        val eventTitle = inputData.getString("EVENT_TITLE") ?: run {
+        val eventId = inputData.getInt("NOTE_ID", -1)
+        val eventTitle = inputData.getString("NOTE_TITLE") ?: run {
             Log.e("NotificationDebug", "Missing EVENT_TITLE in input data")
             return Result.failure()
         }
@@ -50,7 +51,7 @@ class EventNotificationWorker(
 
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra("NAVIGATE_TO_EVENT_ID", eventId)
+            putExtra("NAVIGATE_TO_NOTE_ID", eventId)
         }
 
         val pendingIntent = PendingIntent.getActivity(

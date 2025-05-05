@@ -1,5 +1,9 @@
 package com.example.eventymate
 
+import android.app.NotificationChannel
+import androidx.work.OneTimeWorkRequestBuilder
+import java.util.concurrent.TimeUnit
+import android.app.NotificationManager
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -21,7 +25,10 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.room.Room
+import androidx.work.workDataOf
+import com.example.eventymate.Notification.EventNotificationWorker
 import com.example.eventymate.data.NotesDatabase
 import com.example.eventymate.locale.LocaleHelper
 import com.example.eventymate.navigation.EventNavigation
@@ -30,7 +37,12 @@ import com.example.eventymate.presentation.NotesViewModel
 class MainActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase, LocaleHelper.getPersistedLanguage(newBase)))
+        super.attachBaseContext(
+            LocaleHelper.setLocale(
+                newBase,
+                LocaleHelper.getPersistedLanguage(newBase)
+            )
+        )
     }
 
     private val database by lazy {
@@ -40,19 +52,21 @@ class MainActivity : ComponentActivity() {
             "notes.db"
         )
 //        .fallbackToDestructiveMigration()
-        .build()
+            .build()
     }
 
-    private val viewModel by viewModels<NotesViewModel> (
+    private val viewModel by viewModels<NotesViewModel>(
         factoryProducer = {
             object : ViewModelProvider.Factory {
-                override fun<T: ViewModel> create(modelClass: Class<T>): T {
-                    return NotesViewModel(database.dao) as T
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return NotesViewModel(
+                        application = application,
+                        dao = database.dao
+                    ) as T
                 }
             }
         }
     )
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +85,7 @@ class MainActivity : ComponentActivity() {
             Log.e("Firebase", "Error initializing Firebase: ${e.message}")
         }
 
+        //Notification Manager
         val workManager = WorkManager.getInstance(this)
         Log.d("NotificationDebug", "WorkManager initialized: $workManager")
 
@@ -101,26 +116,27 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    }
-//        requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 100)
-//        createNotificationChannel()
+        requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 100)
+        createNotificationChannel()
     }
 
-//    private fun createNotificationChannel() {
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            val channel = NotificationChannel(
-//                "event_countdown_channel",
-//                "Event Countdown Notifications",
-//                NotificationManager.IMPORTANCE_HIGH
-//            ).apply {
-//                description = "Notifications for when events are happening"
-//                enableLights(true)
-//                enableVibration(true)
-//            }
-//
-//            val notificationManager =
-//                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//            notificationManager.createNotificationChannel(channel)
-//        }
-//    }
+
+    private fun createNotificationChannel() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "event_mate_channel",
+                "Event Countdown Notifications",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Notifications for when events are happening"
+                enableLights(true)
+                enableVibration(true)
+            }
+
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+}
 
