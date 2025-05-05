@@ -27,11 +27,13 @@ import com.example.eventymate.ui.theme.ThemeColors
 fun ProfileScreen(
     navController: NavController,
     onSignOut: () -> Unit,
+    isDarkTheme: Boolean,
 ) {
+    val colors = if (isDarkTheme) ThemeColors.Night else ThemeColors.Day
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(ThemeColors.Night.surafce)
+            .background(colors.secondary)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -45,12 +47,13 @@ fun ProfileScreen(
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
+                    .background(colors.secondary)
                     .border(2.dp, Color.Gray, CircleShape)
             )
             Icon(
                 imageVector = Icons.Default.Edit,
                 contentDescription = "Edit",
-                tint = Color.White,
+                tint = colors.text,
                 modifier = Modifier
                     .size(24.dp)
                     .background(Color.Gray, CircleShape)
@@ -60,14 +63,27 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Rawan Hassan", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Text(
+            "Rawan Hassan", fontSize = 20.sp, fontWeight = FontWeight.Bold,
+            color = colors.text
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
 
-        ProfileItem("Edit Profile", R.drawable.edit_icon) { navController.navigate("edit_profile") }
-        ProfileItem("Notification", R.drawable.baseline_notifications) { }
-        ProfileItem("Change Password", R.drawable.lock) { }
+        ProfileItem(
+            "Edit Profile",
+            R.drawable.edit_icon,
+            isDarkTheme
+        ) { navController.navigate("edit_profile") }
+        ProfileItem(
+            "Notification", R.drawable.baseline_notifications,
+            isDarkTheme
+        ) { }
+        ProfileItem(
+            "Change Password", R.drawable.lock,
+            isDarkTheme
+        ) { }
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -84,8 +100,10 @@ fun ProfileScreen(
 fun ProfileItem(
     title: String,
     iconResId: Int,
+    isDarkTheme: Boolean,
     onClick: () -> Unit,
 ) {
+    val colors = if (isDarkTheme) ThemeColors.Night else ThemeColors.Day
     val icon = painterResource(id = iconResId)
 
     Row(
@@ -97,7 +115,10 @@ fun ProfileItem(
     ) {
         Icon(painter = icon, contentDescription = null, tint = Color.Gray)
         Spacer(modifier = Modifier.width(8.dp))
-        Text(title, fontSize = 16.sp)
+        Text(
+            title, fontSize = 16.sp,
+            color = colors.text
+        )
     }
 }
 

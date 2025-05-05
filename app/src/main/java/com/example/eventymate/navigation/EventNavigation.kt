@@ -136,7 +136,8 @@ fun EventNavigation(
 
         composable("profile") {
             ProfileScreen(navController,
-                onSignOut = { navController.navigate("login") })
+                onSignOut = { navController.navigate("login") },
+                isDarkTheme = viewModel.isDarkTheme.value)
         }
 
         composable("edit_profile") {

@@ -16,23 +16,27 @@ val dark_btn = Color(0xFF222427)
 val light_btn = Color(0xFF63A7CE)
 val light_bg = Color(0xffF6F8F9)
 val clear_light = Color(0xFF27548A)
+val secondary = Color(0xFF1D2A38)
 
 sealed class ThemeColors(
     val bacground: Color,
     val surafce: Color,
     val primary: Color,
-    val text: Color
+    val text: Color,
+    val secondary: Color
 )  {
     object Night: ThemeColors(
         bacground = Color.Black,
         surafce = dark_btn,
         primary = clear_dark,
-        text = Color.White
+        text = Color.White,
+        secondary = secondary
     )
     object Day: ThemeColors(
         bacground = light_bg,
         surafce = light_btn,
         primary = clear_light,
-        text = Color.Black
+        text = Color.Black,
+        secondary = light_bg
     )
 }
