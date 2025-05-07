@@ -48,7 +48,8 @@ fun EventNavigation(
                 onNavigateToLogin = { navController.navigate("login") },
                 onNavigateToVerification = { email ->
                     navController.navigate("verify_email/$email")
-                }
+                },
+                navController = navController
             )
         }
 

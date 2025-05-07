@@ -19,11 +19,16 @@ import androidx.navigation.NavHostController
 import com.example.eventymate.R
 import com.example.eventymate.auth.AuthState
 import com.example.eventymate.auth.AuthViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 
 
 @Composable
 fun SplashScreen(
+    navController: NavHostController,
+    auth: FirebaseAuth = Firebase.auth,
     authViewModel: AuthViewModel = viewModel(),
     onNavigateToHome: () -> Unit,
     onNavigateToVerification: (String) -> Unit,
@@ -31,6 +36,18 @@ fun SplashScreen(
 ) {
     val authState by authViewModel.authState.collectAsState()
 
+    val user = auth.currentUser
+    LaunchedEffect(Unit) {
+        if (user != null && user.isEmailVerified) {
+            navController.navigate("home") {
+                popUpTo("splash") { inclusive = true }
+            }
+        } else {
+            navController.navigate("login") {
+                popUpTo("splash") { inclusive = true }
+            }
+        }
+    }
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
