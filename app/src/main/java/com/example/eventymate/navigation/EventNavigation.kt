@@ -21,6 +21,7 @@ import com.example.eventymate.screens.SettingsScreen
 import com.example.eventymate.screens.SplashScreen
 import com.example.eventymate.screens.eventadd.CreateEventScreen
 import com.example.eventymate.screens.EditProfileScreen
+import com.example.eventymate.screens.LovedScreen
 import com.example.eventymate.screens.ProfileScreen
 
 //import com.example.eventymate.screens.eventadd.CreateEventScreen
@@ -124,6 +125,14 @@ fun EventNavigation(
                 onThemeToggle = { viewModel.toggleTheme() },
                 isDarkTheme = viewModel.isDarkTheme.value
             )
+        }
+        composable("love") {
+            LovedScreen(
+                state = state,
+                viewModel = viewModel,
+                isDarkTheme = viewModel.isDarkTheme.value,
+                navController = navController,
+                )
         }
 
         composable("createEvent") {

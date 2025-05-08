@@ -333,6 +333,19 @@ fun NoteItem(
                     tint = textColor
                 )
             }
+            // Add Love Icon Button
+            IconButton(
+                onClick = {
+                    onEvent(NotesEvent.ToggleLoveNote(note))
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Love Note",
+                    tint = if (note.isLoved) Color.Red else textColor,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(
@@ -380,81 +393,92 @@ fun EventMateBottomNavigation(
         cutoutShape = CircleShape,
         backgroundColor = backgroundColor
     ) {
-        BottomNavigationItem(
-            selected = selectedItem == 0,
-            onClick = {
-                selectedItem = 0
-                navController.navigate("home")
-            },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Home",
-                    tint = contentColor
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Row(modifier = Modifier.weight(1f)) {
+                BottomNavigationItem(
+                    selected = selectedItem == 0,
+                    onClick = {
+                        selectedItem = 0
+                        navController.navigate("home")
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = "Home",
+                            tint = contentColor
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = "Home",
+                            color = contentColor
+                        )
+                    }
                 )
-            },
-            label = {
-                Text(
-                    text = "Home",
-                    color = contentColor
-                )
-            }
-        )
-        BottomNavigationItem(
-            selected = selectedItem == 1,
-            onClick = { selectedItem = 1 },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Map",
-                    tint = contentColor
-                )
-            },
-            label = {
-                Text(
-                    text = "Map",
-                    color = contentColor
-                )
-            }
-        )
-        Spacer(Modifier.weight(1f, true))
-        BottomNavigationItem(
-            selected = selectedItem == 2,
-            onClick = { selectedItem = 2 },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = "Love",
-                    tint = contentColor
-                )
-            },
-            label = {
-                Text(
-                    text = "Love",
-                    color = contentColor
+                BottomNavigationItem(
+                    selected = selectedItem == 1,
+                    onClick = { selectedItem = 1 },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = "Map",
+                            tint = contentColor
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = "Map",
+                            color = contentColor
+                        )
+                    }
                 )
             }
-        )
-        BottomNavigationItem(
-            selected = selectedItem == 3,
-            onClick = {
-                selectedItem = 3
-                navController.navigate("profile")
-            },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Profile",
-                    tint = contentColor
+            //Spacer(Modifier.weight(1f, true))
+            Spacer(modifier = Modifier.width(48.dp))
+
+            Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.End) {
+                BottomNavigationItem(
+                    selected = selectedItem == 2,
+                    onClick = {
+                        selectedItem = 2
+                        navController.navigate("love")
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = "Love",
+                            tint = contentColor
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = "Love",
+                            color = contentColor
+                        )
+                    }
                 )
-            },
-            label = {
-                Text(
-                    text = "Profile",
-                    color = contentColor
+                BottomNavigationItem(
+                    selected = selectedItem == 3,
+                    onClick = {
+                        selectedItem = 3
+                        navController.navigate("profile")
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Profile",
+                            tint = contentColor
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = "Profile",
+                            color = contentColor
+                        )
+                    }
                 )
             }
-        )
+        }
     }
 }
 

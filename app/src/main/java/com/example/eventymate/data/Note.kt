@@ -15,6 +15,8 @@ data class Note(
     val dateAdded: Long,
     val date: Date,
     val category: String,
+    val isLoved: Boolean = false ,
+
 
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0

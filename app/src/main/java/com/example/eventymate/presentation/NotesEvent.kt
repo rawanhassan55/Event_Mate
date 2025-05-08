@@ -18,4 +18,6 @@ sealed interface NotesEvent {
 
     data class SelectCategory(val category: String) : NotesEvent
 
+    data class ToggleLoveNote(val note: Note) : NotesEvent
+
 }

@@ -131,6 +131,13 @@ class NotesViewModel(
                 _state.value = state.value.copy(category = event.category)
             }
 
+            is NotesEvent.ToggleLoveNote -> {
+                viewModelScope.launch {
+                    val updatedNote = event.note.copy(isLoved = !event.note.isLoved)
+                    dao.upsertNote(updatedNote)
+                }
+            }
+
             NotesEvent.SortNotes -> {
                 isSortedByDateAdded.value = !isSortedByDateAdded.value
             }

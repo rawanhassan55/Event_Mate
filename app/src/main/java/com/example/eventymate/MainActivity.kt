@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
             NotesDatabase::class.java,
             "notes.db"
         )
-//        .fallbackToDestructiveMigration()
+           //.fallbackToDestructiveMigration() // to reset Database
             .build()
     }
 
