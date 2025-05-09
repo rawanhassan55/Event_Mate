@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,6 +58,8 @@ import com.example.eventymate.presentation.NotesEvent
 import com.example.eventymate.presentation.NotesViewModel
 import com.example.eventymate.screens.eventadd.CategorySelector
 import com.example.eventymate.ui.theme.ThemeColors
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
 
 @Composable
@@ -70,6 +73,24 @@ fun HomeScreen(
     onThemeToggle: () -> Unit,
 ) {
     val colors = if (isDarkTheme) ThemeColors.Night else ThemeColors.Day
+    val nameState = remember { mutableStateOf("Loading...") }
+    //get the username from firebase
+    LaunchedEffect(Unit) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            FirebaseFirestore.getInstance().collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        nameState.value = document.getString("name") ?: "User".toString()
+                    }
+                }
+                .addOnFailureListener {
+                    nameState.value = "Failed to load name"
+                }
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -91,6 +112,7 @@ fun HomeScreen(
         isFloatingActionButtonDocked = true,
         topBar = {
             TopBarSection(
+                userName = nameState.value,
                 onLanguageClick = {
                     val newLang = if (Locale.getDefault().language == "en") "ar" else "en"
                     onLanguageToggle(newLang)
@@ -150,7 +172,7 @@ fun TopBarSection(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(horizontalAlignment = Alignment.End) {
+        Column() {
             Text(
                 text = stringResource(id = R.string.welcom),
                 color = contentColor,

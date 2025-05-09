@@ -20,6 +20,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.eventymate.R
 import com.example.eventymate.ui.theme.ThemeColors
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 @Composable
@@ -51,6 +54,24 @@ fun ProfileScreen(
     val sharedPref =
         remember { context.getSharedPreferences("profile_prefs", Context.MODE_PRIVATE) }
 
+    val nameState = remember { mutableStateOf("Loading...") }
+    //get the username from firebase
+    LaunchedEffect(Unit) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            FirebaseFirestore.getInstance().collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        nameState.value = document.getString("name") ?: "User"
+                    }
+                }
+                .addOnFailureListener {
+                    nameState.value = "Failed to load name"
+                }
+        }
+    }
     // Load saved URI if available
     var imageUri by remember {
         mutableStateOf<Uri?>(
@@ -117,7 +138,7 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            "Rawan Hassan", fontSize = 20.sp, fontWeight = FontWeight.Bold,
+            "${nameState.value}", fontSize = 20.sp, fontWeight = FontWeight.Bold,
             color = colors.text
         )
 

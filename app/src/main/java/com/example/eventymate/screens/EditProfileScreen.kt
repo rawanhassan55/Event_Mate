@@ -15,25 +15,32 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.eventymate.ui.theme.ThemeColors
 
 @Composable
-fun EditProfileScreen(navController: NavController) {
+fun EditProfileScreen(navController: NavController,isDarkTheme: Boolean,
+) {
     var name by remember { mutableStateOf("Rawan Hassan") }
     var username by remember { mutableStateOf("") }
     var gender by remember { mutableStateOf("Female") }
     var phone by remember { mutableStateOf("+20 1233344002") }
     var email by remember { mutableStateOf("rh045@email.com") }
     var genderExpanded by remember { mutableStateOf(false) }
+    val colors = if (isDarkTheme) ThemeColors.Night else ThemeColors.Day
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .background(colors.secondary)
     ) {
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable { navController.popBackStack() }
+            modifier = Modifier
+                .background(colors.secondary)
+                .clickable { navController.popBackStack() }
         ) {
             Icon(Icons.Default.ArrowBack, contentDescription = "Back")
             Spacer(modifier = Modifier.width(8.dp))
