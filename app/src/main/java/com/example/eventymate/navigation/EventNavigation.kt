@@ -151,7 +151,7 @@ fun EventNavigation(
         }
 
         composable("edit_profile") {
-            EditProfileScreen(navController)
+            EditProfileScreen(navController,isDarkTheme = viewModel.isDarkTheme.value)
         }
 
 

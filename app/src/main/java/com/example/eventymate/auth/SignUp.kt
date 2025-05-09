@@ -2,6 +2,7 @@ package com.example.eventymate.auth
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -59,6 +60,7 @@ import com.example.eventymate.R
 import com.example.eventymate.locale.LocaleHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
@@ -219,6 +221,23 @@ fun SignUpScreen(
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     val user = auth.currentUser
+                                    //save username to firebase
+                                    val userId =
+                                        auth.currentUser?.uid ?: return@addOnCompleteListener
+                                    val db = FirebaseFirestore.getInstance()
+
+                                    db.collection("users").document(userId)
+                                        .set(
+                                            hashMapOf(
+                                                "name" to name,
+                                            )
+                                        )
+                                        .addOnSuccessListener {
+                                            Log.d("Firestore", "User profile created.")
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.w("Firestore", "Error adding document", e)
+                                        }
                                     user?.sendEmailVerification()
                                         ?.addOnCompleteListener { verificationTask ->
                                             isLoading = false
