@@ -105,7 +105,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("androidx.core:core-ktx:1.15.0")
 
-    implementation ("io.coil-kt:coil-compose:2.4.0") // For AsyncImage
+    implementation ("io.coil-kt:coil-compose:2.5.0") // For AsyncImage
     implementation ("androidx.activity:activity-compose:1.8.0")
 
 }

@@ -1,7 +1,15 @@
 package com.example.eventymate.navigation
 
+import android.util.Log
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,6 +23,7 @@ import com.example.eventymate.auth.ForgotPasswordScreen
 import com.example.eventymate.auth.LoginScreen
 import com.example.eventymate.auth.PreferencesHelper
 import com.example.eventymate.auth.SignUpScreen
+import com.example.eventymate.data.Note
 import com.example.eventymate.presentation.NoteState
 import com.example.eventymate.presentation.NotesViewModel
 import com.example.eventymate.screens.SettingsScreen
@@ -23,6 +32,8 @@ import com.example.eventymate.screens.eventadd.CreateEventScreen
 import com.example.eventymate.screens.EditProfileScreen
 import com.example.eventymate.screens.LovedScreen
 import com.example.eventymate.screens.ProfileScreen
+import com.example.eventymate.screens.eventadd.CountdownScreen
+import java.lang.reflect.Modifier
 
 //import com.example.eventymate.screens.eventadd.CreateEventScreen
 
@@ -155,28 +166,29 @@ fun EventNavigation(
             EditProfileScreen(navController,isDarkTheme = viewModel.isDarkTheme.value)
         }
 
+        composable("countdown/{eventId}",
+            arguments = listOf(navArgument("eventId") { type = NavType.StringType })) {
 
-//        composable("AddNoteScreen") {
-//            AddNoteScreen(
-//                state = state,
-//                navController = navController,
-//                onEvent = viewModel::onEvent
-//            )
-//        }
+            backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: return@composable
 
+            //log
+            Log.d("EventNav", "Navigating to Countdown with Event ID: $eventId")
 
-        /*composable("home") {
-            HomeScreen(
-                navController = navController,
-                viewModel = eventViewModel,
-                onSettingNavigation = { navController.navigate("setting") },
-                onSignOut = {
-                    authViewModel.signOut()
-                    navController.navigate("login") {
-                        popUpTo("home") { inclusive = true }
-                    }
+            val noteFlow = viewModel.getEventByIdFlow(eventId).collectAsState(initial = null)
+
+            noteFlow.value?.let { event ->
+                //log
+                Log.d("EventNav", "Event found: $event")
+                CountdownScreen(event = event, navController = navController)
+            } ?: run {
+                Box(modifier = androidx.compose.ui.Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
-            )
-        }*/
+            }
+        }
+
+
+
     }
 }

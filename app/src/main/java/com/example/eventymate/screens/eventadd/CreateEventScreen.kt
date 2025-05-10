@@ -67,7 +67,7 @@ fun CreateEventScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Image(
-            painter = painterResource(id = R.drawable.image),
+            painter = painterResource(id = R.drawable.pic),
             contentDescription = "Event Image",
             contentScale = ContentScale.Crop,
             modifier = Modifier

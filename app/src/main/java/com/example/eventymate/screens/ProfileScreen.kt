@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+//import coil.compose.rememberAsyncImagePainter
 import com.example.eventymate.R
 import com.example.eventymate.ui.theme.ThemeColors
 import com.google.firebase.auth.FirebaseAuth
@@ -69,7 +70,7 @@ fun ProfileScreen(
                     }
                 }
                 .addOnFailureListener {
-                    nameState.value = "Failed to load name"
+                    nameState.value = "Welcome!"
                 }
         }
     }
@@ -122,6 +123,7 @@ fun ProfileScreen(
                     .background(colors.secondary)
                     .border(2.dp, Color.Gray, CircleShape)
             )
+
             Icon(
                 imageVector = Icons.Default.Edit,
                 contentDescription = "Edit",
@@ -170,7 +172,7 @@ fun ProfileScreen(
 
         Button(
             onClick = { onSignOut() },
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFF4A5182))
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFF27548A))
         ) {
             Text("Sign Out", color = Color.White)
         }

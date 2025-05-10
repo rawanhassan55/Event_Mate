@@ -346,8 +346,8 @@ fun FlagToggle(
 ) {
     val flags = listOf("usa", "egypt")
     val flagImages = mapOf(
-        "usa" to R.drawable.usa_flag,
-        "egypt" to R.drawable.egypt
+        "usa" to R.drawable.english,
+        "egypt" to R.drawable.arabic
     )
 
     Box(

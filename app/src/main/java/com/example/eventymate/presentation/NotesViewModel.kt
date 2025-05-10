@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.Query
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -14,6 +15,7 @@ import androidx.work.workDataOf
 import com.example.eventymate.Notification.EventNotificationWorker
 import com.example.eventymate.data.Note
 import com.example.eventymate.data.NoteDao
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -145,5 +147,12 @@ class NotesViewModel(
             else -> {}
         }
     }
+
+//change
+fun getEventByIdFlow(eventId: Int): Flow<Note?> {
+    Log.d("EventDao", "Fetching note with ID: $eventId")
+    return dao.getNoteById(eventId)
+}
+
 
 }

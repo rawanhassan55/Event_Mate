@@ -289,7 +289,8 @@ fun NonEmptyEventsIllustration(
                 onEvent = viewModel::onEvent,
                 containerColor = containerColor,
                 textColor = textColor,
-                isDarkTheme = isDarkTheme
+                isDarkTheme = isDarkTheme,
+                navController = navController
             )
         }
     }
@@ -319,10 +320,15 @@ fun NoteItem(
     containerColor: Color,
     textColor: Color,
     isDarkTheme: Boolean,
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable {
+
+            navController.navigate("countdown/${note.id}")
+        }
             .clip(RoundedCornerShape(10.dp))
             .background(containerColor)
             .padding(12.dp)
@@ -438,7 +444,7 @@ fun EventMateBottomNavigation(
                         )
                     }
                 )
-                BottomNavigationItem(
+                /*BottomNavigationItem(
                     selected = selectedItem == 1,
                     onClick = { selectedItem = 1 },
                     icon = {
@@ -454,7 +460,7 @@ fun EventMateBottomNavigation(
                             color = contentColor
                         )
                     }
-                )
+                )*/
             }
             //Spacer(Modifier.weight(1f, true))
             Spacer(modifier = Modifier.width(48.dp))

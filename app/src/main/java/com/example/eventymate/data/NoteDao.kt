@@ -23,6 +23,10 @@ interface NoteDao {
     @Query("SELECT * FROM note ORDER BY title ASC")
     fun getNotesOrderdByTitle(): Flow<List<Note>>
 
+    //change
+    @Query("SELECT * FROM note WHERE id = :id")
+    fun getNoteById(id: Int): Flow<Note?>
+
 }
 
 
