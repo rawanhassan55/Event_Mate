@@ -54,7 +54,8 @@ fun ProfileScreen(
     val sharedPref =
         remember { context.getSharedPreferences("profile_prefs", Context.MODE_PRIVATE) }
 
-    val nameState = remember { mutableStateOf("Loading...") }
+    val nameState = remember { mutableStateOf("") }
+
     //get the username from firebase
     LaunchedEffect(Unit) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid

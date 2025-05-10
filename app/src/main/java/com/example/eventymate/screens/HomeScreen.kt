@@ -73,7 +73,8 @@ fun HomeScreen(
     onThemeToggle: () -> Unit,
 ) {
     val colors = if (isDarkTheme) ThemeColors.Night else ThemeColors.Day
-    val nameState = remember { mutableStateOf("Loading...") }
+    val nameState = remember { mutableStateOf("") }
+
     //get the username from firebase
     LaunchedEffect(Unit) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
@@ -83,7 +84,7 @@ fun HomeScreen(
                 .get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
-                        nameState.value = document.getString("name") ?: "User".toString()
+                        nameState.value = document.getString("name") ?: "User"
                     }
                 }
                 .addOnFailureListener {

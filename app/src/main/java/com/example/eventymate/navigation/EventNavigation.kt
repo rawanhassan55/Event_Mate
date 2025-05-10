@@ -89,7 +89,8 @@ fun EventNavigation(
                 onNavigateToSignUp = { navController.navigate("signup") },
                 onNavigateToForgotPassword = { navController.navigate("forgot_password") },
                 viewModel = authViewModel,
-                onNavigateToMain = { navController.navigate("home") }
+                onNavigateToMain = { navController.navigate("home") },
+                onNavigateToVerify = {navController.navigate("verify_email/{email}")}
             )
         }
 

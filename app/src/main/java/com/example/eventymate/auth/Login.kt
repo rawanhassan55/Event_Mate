@@ -57,6 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.example.eventymate.R
 import com.example.eventymate.locale.LocaleHelper
 import com.google.firebase.auth.FirebaseAuth
@@ -68,10 +69,12 @@ import kotlinx.coroutines.launch
 fun LoginScreen(
     onSignInSuccess: () -> Unit,
     onNavigateToSignUp: () -> Unit,
+    onNavigateToVerify: () -> Unit,
     onNavigateToMain: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     viewModel: AuthViewModel = viewModel(),
 ) {
+    val navController = rememberNavController()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -98,6 +101,8 @@ fun LoginScreen(
 
             is AuthState.EmailNotVerified -> {
                 Log.d("AuthDebug", "Email not verified - show warning")
+                errorMessage = "Please verify your email."
+
             }
 
             else -> {}
@@ -126,7 +131,6 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            //(Color(0xff0f1128))
             .background(Color.White)
     ) {
         Column(
@@ -145,8 +149,6 @@ fun LoginScreen(
                     .size(280.dp)
                     .height(50.dp)
                     .width(50.dp)
-                //.padding(bottom = 8.dp)
-                //color : 0XFF4A5182
             )
 
             Text(
@@ -154,7 +156,6 @@ fun LoginScreen(
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0XFF4A5182),
-                //modifier = Modifier.padding(bottom = 16.dp)
             )
 
             Text(
@@ -198,8 +199,7 @@ fun LoginScreen(
                 value = password,
                 onValueChange = { password = it },
                 label = stringResource(id = R.string.login_to_account),
-
-                )
+            )
 
             TextButton(onClick = { onNavigateToForgotPassword() }) {
                 Text(
@@ -212,6 +212,14 @@ fun LoginScreen(
                 onClick = {
                     isLoading = true
                     errorMessage = null
+
+                    // Validate Email format
+                    if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        errorMessage = "Please enter a valid email address"
+                        isLoading = false
+                        return@Button
+                    }
+
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             isLoading = false
@@ -220,7 +228,7 @@ fun LoginScreen(
                                 if (user != null && user.isEmailVerified) {
                                     onNavigateToMain()
                                 } else {
-                                    errorMessage = "Please verify your email first."
+                                    navController.navigate("verify_email/{email}")
                                 }
                             } else {
                                 errorMessage = task.exception?.message ?: "Login failed"
@@ -233,21 +241,15 @@ fun LoginScreen(
                     .padding(top = 16.dp)
                     .height(48.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    Color(0XFF4A5182),
-                )
+                colors = ButtonDefaults.buttonColors(Color(0XFF4A5182))
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
                         color = MaterialTheme.colorScheme.onPrimary
                     )
-                    onNavigateToMain()
                 } else {
-                    Text(
-                        stringResource(id = R.string.login),
-                        style = TextStyle(color = Color.White)
-                    )
+                    Text(stringResource(id = R.string.login), style = TextStyle(color = Color.White))
                 }
             }
 
@@ -269,7 +271,7 @@ fun LoginScreen(
                     color = Color.Gray.copy(alpha = 0.3f)
                 )
             }
-            //Spacer(modifier = Modifier.height(4.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
@@ -311,12 +313,6 @@ fun LoginScreen(
                     )
                 }
             }
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = Color(0XFF4A5182)
-                )
-            }
 
             errorMessage?.let { message ->
                 Text(
@@ -339,8 +335,6 @@ fun LoginScreen(
                     }
                 )
             }
-
-
         }
     }
 }

@@ -43,7 +43,7 @@ fun SplashScreen(
                 popUpTo("splash") { inclusive = true }
             }
         } else {
-            navController.navigate("login") {
+            navController.navigate("signup") {
                 popUpTo("splash") { inclusive = true }
             }
         }
